@@ -61,6 +61,16 @@ public class SSDNASequence {
         return new SSDNASequence(rev);
     }
 
+    public SSDNASequence getReversePrimer(){
+        SSDNASequence revGOI = this.getReversed();
+        return revGOI.getSubSequence(0,20).getComplement();
+    }
+
+    public SSDNASequence getForwardPrimer(){
+        return this.getSubSequence(0,20);
+    }
+
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
@@ -69,8 +79,12 @@ public class SSDNASequence {
         return builder.toString();
     }
 
-    public DSDNASequence polymerize(Primer primer) {
-        // TODO
+    public DSDNASequence polymerize(SSDNASequence primer) {
+        //TODO
+        String parent = toString();
+        String primerComplement =
+                primer.getComplement().toString();
+
         return null;
     }
 }

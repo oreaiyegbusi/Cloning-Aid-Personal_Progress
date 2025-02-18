@@ -24,6 +24,10 @@ public class Primer extends SSDNASequence {
         return new Primer(subSequence.getComplement());
     }
 
+    public Primer getForwardPrimer() {
+        return this;
+    }
+
     private double getAnnealingTemperature(SSDNASequence goi) {
         return (0.3 * getMeltingTemperature() + 0.7 * goi.getMeltingTemperature());
     }
