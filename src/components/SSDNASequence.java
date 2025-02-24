@@ -2,13 +2,37 @@ package components;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
-public class SSDNASequence {
+public class SSDNASequence  implements Iterable<Nucleotide>{
+    /**
+     * The SSDNASequence is listed in the forward direction 5'-3'
+     */
     private final List<Nucleotide> sequence = new ArrayList<>();
 
-    protected SSDNASequence() {
-
+    public SSDNASequence(String seq) throws CloningAidException {
+        char[] narr = seq.toCharArray();
+        Nucleotide[] nucleotides = new Nucleotide[narr.length];
+        for (int i = 0; i < nucleotides.length; i++) {
+            switch (narr[i]) {
+                case 'A':
+                    nucleotides[i] = new Adenine();
+                    break;
+                case 'G':
+                    nucleotides[i] = new Guanine();
+                    break;
+                case 'T':
+                    nucleotides[i] = new Thiamine();
+                    break;
+                case 'C':
+                    nucleotides[i] = new Cytosine();
+                    break;
+                default:
+                    throw new CloningAidException("Illegal char in Nucleotide sequence!");
+            }
+        }
+        this.sequence.addAll(List.of(nucleotides));
     }
 
     public SSDNASequence(List<Nucleotide> nucleotides) {
@@ -61,16 +85,6 @@ public class SSDNASequence {
         return new SSDNASequence(rev);
     }
 
-    public SSDNASequence getReversePrimer(){
-        SSDNASequence revGOI = this.getReversed();
-        return revGOI.getSubSequence(0,20).getComplement();
-    }
-
-    public SSDNASequence getForwardPrimer(){
-        return this.getSubSequence(0,20);
-    }
-
-
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
@@ -79,12 +93,44 @@ public class SSDNASequence {
         return builder.toString();
     }
 
-    public DSDNASequence polymerize(SSDNASequence primer) {
-        //TODO
-        String parent = toString();
-        String primerComplement =
-                primer.getComplement().toString();
+    public boolean contains(SSDNASequence sequence) {
+            String thisSequence = toString();
+            return (thisSequence.contains(sequence.toString()));
+    }
 
-        return null;
+    public int getStartingIndex(SSDNASequence sequence) {
+            try {
+                if (!contains(sequence))
+                    throw new CloningAidException("Sequence does not exist in this strand!");
+            } catch (CloningAidException e) {
+                System.err.println(e.getMessage());
+            }
+            return toString().indexOf(sequence.toString());
+    }
+
+    @Override
+    public Iterator<Nucleotide> iterator() {
+        return sequence.iterator();
+    }
+
+    public boolean isFullyBound(){
+        for (Nucleotide n : sequence) {
+            if (!n.isBound())
+                return false;
+        }
+        return true;
+    }
+
+    public void bindFrom(int index) throws CloningAidException {
+        for (int i = index; i >= 0 ; i--) {
+            Nucleotide n = sequence.get(i);
+            if (n.isBound())
+                throw  new CloningAidException("Attempt to bind to bound nucleotide");
+            n.setBound(true);
+        }
+    }
+
+    public Nucleotide getNucleotide(int i) {
+        return sequence.get(i);
     }
 }
