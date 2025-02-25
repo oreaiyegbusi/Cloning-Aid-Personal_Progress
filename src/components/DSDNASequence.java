@@ -105,9 +105,10 @@ public class DSDNASequence {
      */
     private int getBindingIndex(SSDNASequence sequence, SSDNASequence primer) {
         int bindingIndex = -1;
-        if (sequence.getComplement().getReversed().contains(primer)) {
-            int startIndex = sequence.getStartingIndex(primer);
-            bindingIndex = sequence.getLength() - 1 - startIndex;
+        SSDNASequence modifiedSequence = sequence.getComplement().getReversed();
+        if (modifiedSequence.contains(primer)) {
+            int startIndex = modifiedSequence.getStartingIndex(primer);
+            bindingIndex = modifiedSequence.getLength() - 1 - startIndex;
         }
         return bindingIndex;
     }
@@ -150,6 +151,14 @@ public class DSDNASequence {
         product = new DSDNASequence(newUpper, parentLower);
         result[1] = product;
         return result;
+    }
+
+    public SSDNASequence getUpper() {
+        return upper;
+    }
+
+    public SSDNASequence getLower() {
+        return lower;
     }
 
     @Override

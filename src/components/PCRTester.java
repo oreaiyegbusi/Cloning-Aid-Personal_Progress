@@ -26,7 +26,7 @@ public class PCRTester {
     public static void main(String[] args) {
         DSDNASequence goi, donor;
         SSDNASequence seqGoi, seqDonor;
-        try {
+        /*
             seqGoi = new SSDNASequence("ATCCGGATATAGTTCCTCCTTTCAGCAAAAAA" +
                     "CCCCTCAAGACCCGTTTAGAGGCCCCAAGGGGTTATGCT");
             seqDonor = new SSDNASequence("ATCCGGATATAGTTCCT" +
@@ -48,15 +48,23 @@ public class PCRTester {
                     "CGCGGCGATTAAATCTCGCGCCGATCAACTGGGTGCCAGCGTGGTGGTGTCGATGGTAGAACGAAGCGGCGT" +
                     "CGAAGCCTGTAAAGCGGCGGTGCACAATCTTCTCGCGCAACGCGTCAGTGGGCTGATCATTAACTATCCGCT" +
                     "GGATGACCAGGATGCCATTGCTGTGGAAGCTGCCTGCACTAATGTTCCGGCGTTATTTCTTGATGTCTCTGA");
+
+             */
+        try {
+            seqGoi = new   SSDNASequence("ATCCGGATATAGTTCCTCCTTT");
+            seqDonor = new SSDNASequence("ATCCGGATATAGTTCCTCCTTT" +
+                    "CAGCAAAAAACCCCTCAAGACCCGTTTAGAGGCCCCAAGGGGTTATGCT");
         } catch (CloningAidException e) {
             throw new RuntimeException(e);
         }
-        goi = new DSDNASequence(seqGoi);
+
         donor = new DSDNASequence(seqDonor);
+        goi = new DSDNASequence(seqGoi);
         donor.melt();
         System.out.println(donor);
         System.out.println(goi);
         DSDNASequence[] cycle1 = donor.polymerize(goi);
-        System.out.println(cycle1);
+        System.out.println(cycle1[0].getUpper());
+        System.out.println(cycle1[0].getLower());
     }
 }

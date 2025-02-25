@@ -88,24 +88,37 @@ public class SSDNASequence  implements Iterable<Nucleotide>{
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        for (Nucleotide n : sequence)
-            builder.append(n.getBase());
+        for (Nucleotide n : sequence) {
+            if (n.isBound())
+                builder.append(n.getBase());
+            else
+                builder.append((char)(n.getBase()+32));
+        }
         return builder.toString();
     }
 
-    public boolean contains(SSDNASequence sequence) {
-            String thisSequence = toString();
-            return (thisSequence.contains(sequence.toString()));
+    public String getSequenceAsString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Nucleotide n : this.sequence) {
+            stringBuilder.append(n.getBase());
+        }
+        return stringBuilder.toString();
     }
 
-    public int getStartingIndex(SSDNASequence sequence) {
+    public boolean contains(SSDNASequence that) {
+        String sequenceAsString = getSequenceAsString();
+        String thatSequenceAsString = that.getSequenceAsString();
+        return sequenceAsString.contains(thatSequenceAsString);
+    }
+
+    public int getStartingIndex(SSDNASequence that) {
             try {
-                if (!contains(sequence))
+                if (!contains(that))
                     throw new CloningAidException("Sequence does not exist in this strand!");
             } catch (CloningAidException e) {
                 System.err.println(e.getMessage());
             }
-            return toString().indexOf(sequence.toString());
+            return getSequenceAsString().indexOf(that.getSequenceAsString());
     }
 
     @Override
