@@ -129,10 +129,13 @@ public class DSDNASequence {
     private SSDNASequence createProductFromBoundStrand(SSDNASequence parent) {
         List<Nucleotide> list = new ArrayList<>();
         for (var n : parent){
-            if (n.isBound())
-                list.add(n);
+            if (n.isBound()) {
+                Nucleotide n2 = n.getComplement();
+                n2.setBound(true);
+                list.add(n2);
+            }
         }
-        return new SSDNASequence(list).getComplement().getReversed();
+        return new SSDNASequence(list).getReversed();
     }
 
     public DSDNASequence[] polymerize(DSDNASequence goi) {
