@@ -33,6 +33,9 @@ public abstract class Nucleotide {
 
     @Override
     public String toString() {
+        if (isBound())
         return String.valueOf(base);
+        else
+            return String.valueOf((char)(base+32));
     }
 }

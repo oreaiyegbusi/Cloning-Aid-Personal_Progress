@@ -58,7 +58,9 @@ public class SSDNASequence  implements Iterable<Nucleotide>{
     public SSDNASequence getComplement() {
         List<Nucleotide> list = new ArrayList<>();
         for (Nucleotide n : sequence) {
-           list.add(n.getComplement());
+            Nucleotide n2 = n.getComplement();
+            n2.setBound(n.isBound());
+           list.add(n2);
         }
         return new SSDNASequence(list);
     }
@@ -83,18 +85,6 @@ public class SSDNASequence  implements Iterable<Nucleotide>{
         List<Nucleotide> rev = new ArrayList<>(sequence);
         Collections.reverse(rev);
         return new SSDNASequence(rev);
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        for (Nucleotide n : sequence) {
-            if (n.isBound())
-                builder.append(n.getBase());
-            else
-                builder.append((char)(n.getBase()+32));
-        }
-        return builder.toString();
     }
 
     public String getSequenceAsString() {
@@ -135,7 +125,7 @@ public class SSDNASequence  implements Iterable<Nucleotide>{
     }
 
     public void bindFrom(int index) throws CloningAidException {
-        for (int i = index; i >= 0 ; i--) {
+        for (int i = index; i < sequence.size() ; i++) {
             Nucleotide n = sequence.get(i);
             if (n.isBound())
                 throw  new CloningAidException("Attempt to bind to bound nucleotide");
@@ -145,5 +135,14 @@ public class SSDNASequence  implements Iterable<Nucleotide>{
 
     public Nucleotide getNucleotide(int i) {
         return sequence.get(i);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for (Nucleotide n : sequence) {
+                builder.append(n);
+        }
+        return builder.toString();
     }
 }
