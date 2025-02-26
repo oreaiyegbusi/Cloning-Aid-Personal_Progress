@@ -26,8 +26,13 @@ public class PCRTester {
     public static void main(String[] args) {
         DSDNASequence goi, donor;
         SSDNASequence seqGoi, seqDonor;
-        /*
-            seqGoi = new SSDNASequence("ATCCGGATATAGTTCCTCCTTTCAGCAAAAAA" +
+          try {
+
+            seqGoi = new SSDNASequence("ATCCGGATATAGTTCCTCCTTTCAG");
+            seqDonor = new SSDNASequence("ATCCGGATATAGTTCCTCCTTTCAG" +
+                                         "CAAAAAACCCCTCAAGACCCGTTTA");
+
+            /*seqGoi = new SSDNASequence("ATCCGGATATAGTTCCTCCTTTCAGCAAAAAA" +
                     "CCCCTCAAGACCCGTTTAGAGGCCCCAAGGGGTTATGCT");
             seqDonor = new SSDNASequence("ATCCGGATATAGTTCCT" +
                     "CCTTTCAGCAAAAAACCCCTCAAGACCCGTTTAGAGGCCCCAAGGGGTTATGCT" +
@@ -49,12 +54,9 @@ public class PCRTester {
                     "CGAAGCCTGTAAAGCGGCGGTGCACAATCTTCTCGCGCAACGCGTCAGTGGGCTGATCATTAACTATCCGCT" +
                     "GGATGACCAGGATGCCATTGCTGTGGAAGCTGCCTGCACTAATGTTCCGGCGTTATTTCTTGATGTCTCTGA");
 
-             */
-        try {
-            seqGoi = new SSDNASequence("ATCCGGATATAGTTCCTCCTTTCAG");
-            seqDonor = new SSDNASequence("ATCCGGATATAGTTCCTCCTTTCAG" +
-                                         "CAAAAAACCCCTCAAGACCCGTTTA");
-        } catch (CloningAidException e) {
+    */
+
+          } catch (CloningAidException e) {
             throw new RuntimeException(e);
         }
 
