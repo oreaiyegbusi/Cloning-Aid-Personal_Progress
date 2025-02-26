@@ -189,11 +189,19 @@ public class DSDNASequence {
         SSDNASequence reversedLower = lower.getReversed();
         for (int top = 0, bottom = 0, k = 0; k < length; k++) {
             if (gap > 0 && top < gap || bottom >= lower.getLength()) {
-                arrayUpper[k] = upper.getNucleotide(top++).getBase();
+                Nucleotide n = upper.getNucleotide(top++);
+                char base = n.getBase();
+                if (!n.isBound())
+                    base = (char)(base+32);
+                arrayUpper[k] = base;
                 arrayLower[k] = (char)(95);
             } else if (gap < 0 && bottom < gap || top >= upper.getLength()) {
+                Nucleotide n = reversedLower.getNucleotide(bottom++);
+                char base = n.getBase();
+                if (!n.isBound())
+                    base = (char)(base+32);
                 arrayUpper[k] = (char)(95);
-                arrayLower[k] = reversedLower.getNucleotide(bottom++).getBase();
+                arrayLower[k] = base;
             }
             else {
                 arrayUpper[k] = upper.getNucleotide(top++).getBase();
