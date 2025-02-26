@@ -29,7 +29,7 @@ public class PCRTester {
           try {
 
             seqGoi = new SSDNASequence("ATCCGGATATAGTTCCTCCTTTCAG");
-            seqDonor = new SSDNASequence("ATCCGGATATAGTTCCTCCTTTCAG" +
+            seqDonor = new SSDNASequence("ATCATCCGGATATAGTTCCTCCTTTCAG" +
                                          "CAAAAAACCCCTCAAGACCCGTTTA");
 
             /*seqGoi = new SSDNASequence("ATCCGGATATAGTTCCTCCTTTCAGCAAAAAA" +
@@ -68,5 +68,7 @@ public class PCRTester {
         DSDNASequence[] cycle1 = donor.polymerize(goi);
         System.out.println("Child[0]\n"+cycle1[0]);
         System.out.println("Child[1]\n"+cycle1[1]);
+        System.out.println("Child[1]\n"+cycle1[1].getUpper());
+        System.out.println("Child[1]\n"+cycle1[1].getLower());
     }
 }

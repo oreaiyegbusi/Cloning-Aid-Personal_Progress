@@ -140,9 +140,11 @@ public class SSDNASequence  implements Iterable<Nucleotide>{
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
+        builder.append("5'[");
         for (Nucleotide n : sequence) {
                 builder.append(n);
         }
+        builder.append("]3'");
         return builder.toString();
     }
 }

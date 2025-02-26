@@ -208,8 +208,8 @@ public class DSDNASequence {
                 arrayLower[k] = reversedLower.getNucleotide(bottom++).getBase();
             }
         }
-        return String.valueOf(arrayUpper) +
-                "\n" +
-                String.valueOf(arrayLower);
+        return "5'["+String.valueOf(arrayUpper) +
+                "]3'\n" + "3'[" +
+                String.valueOf(arrayLower) + "]5'";
     }
 }
