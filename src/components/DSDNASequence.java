@@ -87,16 +87,13 @@ public class DSDNASequence {
                 break;
             }
             if (!sequence.getNucleotide(i).isBound() && inRange) {
-                boundIndexEnd = i;
+                boundIndexEnd = i-1;
                 break;
             }
         }
         return new int[] { boundIndexStart, boundIndexEnd};
     }
 
-    public boolean isFullyBound() {
-        return upper.isFullyBound() && lower.isFullyBound();
-    }
     /**
      * The sequence is the SSDNA to which the primer needs to attach.
      * The sequence is reversed, complemented, and then searched for the pattern
@@ -112,7 +109,7 @@ public class DSDNASequence {
         if (sequence.contains(primerComplement)) {
             bindingIndex = sequence.getStartingIndex(primerComplement);
         }
-        return bindingIndex;
+        return bindingIndex + primer.getLength() - 1;
     }
 
     /**
@@ -122,17 +119,19 @@ public class DSDNASequence {
      */
     private void bindSequence(SSDNASequence sequence, int index) {
         try {
+            // bindFrom(int) runs in the direction of the primer
+            // Starting from the index, bind all the way down to zero, the beginning
             sequence.bindFrom(index);
         } catch (CloningAidException e) {
             System.err.println(e.getMessage());
         }
     }
 
-    private SSDNASequence createProductFromBoundStrand(SSDNASequence parent) {
+    private SSDNASequence createComplementFromBoundStrand(SSDNASequence parent) {
         List<Nucleotide> list = new ArrayList<>();
         for (var n : parent){
+            Nucleotide n2 = n.getComplement();
             if (n.isBound()) {
-                Nucleotide n2 = n.getComplement();
                 n2.setBound(true);
                 list.add(n2);
             }
@@ -149,10 +148,10 @@ public class DSDNASequence {
         bindSequence(upper, lowerBindingIndex);
         DSDNASequence[] result = new DSDNASequence[2];
         SSDNASequence parentLower = this.lower;
-        this.lower = createProductFromBoundStrand(upper);
+        this.lower = createComplementFromBoundStrand(upper);
         result[0] = this;
         computeBindingIndices();
-        SSDNASequence newUpper = createProductFromBoundStrand(parentLower);
+        SSDNASequence newUpper = createComplementFromBoundStrand(parentLower);
         DSDNASequence product = null;
         product = new DSDNASequence(newUpper, parentLower);
         result[1] = product;
@@ -170,8 +169,6 @@ public class DSDNASequence {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("DSDNA\n");
-
         builder.append("\tUpper bound-range 5'[" + upperBoundIndexStart
                 + "," + upperBoundIndexEnd + "]3'\n");
         builder.append("\tLower bound-range 5'[" + lowerBoundIndexStart
@@ -185,7 +182,7 @@ public class DSDNASequence {
         int length = Math.max(upper.getLength(), lower.getLength());
         char[] arrayUpper = new char[length];
         char[] arrayLower = new char[length];
-        int gap = upperBoundIndexStart - lowerBoundIndexStart;
+        int gap = upperBoundIndexStart - (lower.getLength() - lowerBoundIndexEnd);
         SSDNASequence reversedLower = lower.getReversed();
         for (int top = 0, bottom = 0, k = 0; k < length; k++) {
             if (gap > 0 && top < gap || bottom >= lower.getLength()) {
@@ -195,7 +192,7 @@ public class DSDNASequence {
                     base = (char)(base+32);
                 arrayUpper[k] = base;
                 arrayLower[k] = (char)(95);
-            } else if (gap < 0 && bottom < gap || top >= upper.getLength()) {
+            } else if (gap < 0 && bottom < -(gap+1) || top >= upper.getLength()) {
                 Nucleotide n = reversedLower.getNucleotide(bottom++);
                 char base = n.getBase();
                 if (!n.isBound())
@@ -204,8 +201,16 @@ public class DSDNASequence {
                 arrayLower[k] = base;
             }
             else {
-                arrayUpper[k] = upper.getNucleotide(top++).getBase();
-                arrayLower[k] = reversedLower.getNucleotide(bottom++).getBase();
+                Nucleotide n1 = upper.getNucleotide(top++);
+                Nucleotide n2 = reversedLower.getNucleotide(bottom++);
+                char base1 = n1.getBase();
+                char base2 = n2.getBase();
+                if (!n1.isBound() && !n2.isBound()) {
+                    base1 = (char) (base1 + 32);
+                    base2 = (char) (base2 + 32);
+                }
+                arrayUpper[k] = base1;
+                arrayLower[k] = base2;
             }
         }
         return "5'["+String.valueOf(arrayUpper) +

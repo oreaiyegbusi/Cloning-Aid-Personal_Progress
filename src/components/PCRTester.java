@@ -28,8 +28,8 @@ public class PCRTester {
         SSDNASequence seqGoi, seqDonor;
           try {
 
-            seqGoi = new SSDNASequence("ATCCGGATATAGTTCCTCCTTTCAG");
-            seqDonor = new SSDNASequence("ATCATCCGGATATAGTTCCTCCTTTCAG" +
+            seqGoi =   new SSDNASequence("ATCCGGATATAGTTCCTCCTTTCAG");
+            seqDonor = new SSDNASequence("AGGATTACAATCCGGATATAGTTCCTCCTTTCAG" +
                                          "CAAAAAACCCCTCAAGACCCGTTTA");
 
             /*seqGoi = new SSDNASequence("ATCCGGATATAGTTCCTCCTTTCAGCAAAAAA" +
@@ -66,9 +66,10 @@ public class PCRTester {
         System.out.println("DENATURED DONOR:\n"+donor);
         System.out.println("GOI:\n"+goi);
         DSDNASequence[] cycle1 = donor.polymerize(goi);
+        System.out.println("FWD PRIMER:\n"+goi.getForwardPrimer());
+        System.out.println("REV PRIMER:\n"+goi.getReversePrimer());
+
         System.out.println("Child[0]\n"+cycle1[0]);
         System.out.println("Child[1]\n"+cycle1[1]);
-        System.out.println("Child[1]\n"+cycle1[1].getUpper());
-        System.out.println("Child[1]\n"+cycle1[1].getLower());
     }
 }

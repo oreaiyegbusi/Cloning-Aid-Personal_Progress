@@ -125,10 +125,10 @@ public class SSDNASequence  implements Iterable<Nucleotide>{
     }
 
     public void bindFrom(int index) throws CloningAidException {
-        for (int i = index; i < sequence.size() ; i++) {
+        for (int i = 0; i <= index ; i++) {
             Nucleotide n = sequence.get(i);
             if (n.isBound())
-                throw  new CloningAidException("Attempt to bind to bound nucleotide");
+                throw  new CloningAidException("Attempt to bind to bound nucleotide!");
             n.setBound(true);
         }
     }
