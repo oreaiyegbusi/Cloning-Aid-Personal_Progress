@@ -29,13 +29,13 @@ public class PCRTester {
           try {
 
             seqGoi = new SSDNASequence("ATCCGGATATAGTTCCTCCTTTCAG");
-            seqDonor = new SSDNASequence("ATCATCCGGATATAGTTCCTCCTTTCAG" +
+            seqDonor = new SSDNASequence("GATTACAATCCGGATATAGTTCCTCCTTTCAG" +
                                          "CAAAAAACCCCTCAAGACCCGTTTA");
 
             /*seqGoi = new SSDNASequence("ATCCGGATATAGTTCCTCCTTTCAGCAAAAAA" +
                     "CCCCTCAAGACCCGTTTAGAGGCCCCAAGGGGTTATGCT");
             seqDonor = new SSDNASequence("ATCCGGATATAGTTCCT" +
-                    "CCTTTCAGCAAAAAACCCCTCAAGACCCGTTTAGAGGCCCCAAGGGGTTATGCT" +
+                    "GATTACACCTTTCAGCAAAAAACCCCTCAAGACCCGTTTAGAGGCCCCAAGGGGTTATGCT" +
                     "AGTTATTGCTCAGCGGTGGCAGCAGCCAACTCAGCTTCCTTTCGGGCTTTGTTAGCAGCCGGATCTCAGTG" +
                     "GTGGTGGTGGTGGTGCTCGAGTGCGGCCGCAAGCTTGTCGACGGAGCTCGAATTCGGATCCACAGATATCC" +
                     "CATGGCCTTGTCGTCGTCGTCGGTACCCAGATCTGGGCTGTCCATGTGCTGGCGTTCGAATTTAGCAGCAG" +
@@ -64,11 +64,11 @@ public class PCRTester {
         goi = new DSDNASequence(seqGoi);
         donor.denature();
         System.out.println("DENATURED DONOR:\n"+donor);
-        System.out.println("GOI:\n"+goi);
         DSDNASequence[] cycle1 = donor.polymerize(goi);
         System.out.println("Child[0]\n"+cycle1[0]);
         System.out.println("Child[1]\n"+cycle1[1]);
-        System.out.println("Child[1]\n"+cycle1[1].getUpper());
-        System.out.println("Child[1]\n"+cycle1[1].getLower());
+        System.out.println("Fwd Primer:" + goi.getForwardPrimer());
+        System.out.println("Rev Primer:" + goi.getReversePrimer());
+        System.out.println("GOI:\n"+goi);
     }
 }

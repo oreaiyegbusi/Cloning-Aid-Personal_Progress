@@ -1,9 +1,10 @@
 package components;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public class DSDNASequence {
+public class DSDNASequence implements Cloneable {
     /**
      * The Donor and GOI are represented by this class
      */
@@ -14,39 +15,23 @@ public class DSDNASequence {
     public DSDNASequence(SSDNASequence rawDNA) {
         if (rawDNA.getLength() < 20 || rawDNA.getLength() > 20000)
             throw new IllegalArgumentException("Raw DNA sequence out " +
-                            "of limits [ 20 < length < 20000");
+                    "of limits [ 20 < length < 20000");
         upper = rawDNA;
         lower = upper.getComplement().getReversed();
-        forwardPrimer = upper.getSubSequence(0,20);
-        reversePrimer = lower.getSubSequence(0,20);
+        forwardPrimer = upper.getSubSequence(0, 20);
+        reversePrimer = lower.getSubSequence(0, 20);
         for (Nucleotide n : upper)
             n.setBound(true);
-        for (Nucleotide n: lower)
+        for (Nucleotide n : lower)
             n.setBound(true);
         computeBindingIndices();
     }
 
-    private DSDNASequence(SSDNASequence boundUpper, SSDNASequence boundLower) {
-        if (boundUpper.getLength() < 20 || boundUpper.getLength() > 20000)
-            throw new IllegalArgumentException("Upper DNA sequence out " +
-                    "of limits [ 20 < length < 20000");
-        if (boundLower.getLength() < 21 || boundLower.getLength() > 20000)
-            throw new IllegalArgumentException("Lower DNA sequence out " +
-                    "of limits [ 20 < length < 20000");
-
-        this.upper = boundUpper;
-        this.lower = boundLower;
-        forwardPrimer = boundUpper.getSubSequence(0,20);
-        reversePrimer = boundLower.getSubSequence(0,20);
-        computeBindingIndices();
-
-    }
-
-    public SSDNASequence getReversePrimer(){
+    public SSDNASequence getReversePrimer() {
         return reversePrimer;
     }
 
-    public SSDNASequence getForwardPrimer(){
+    public SSDNASequence getForwardPrimer() {
         return forwardPrimer;
     }
 
@@ -55,10 +40,10 @@ public class DSDNASequence {
      */
     public void denature() {
         // unbinds all the nucleotides
-        for (Nucleotide n: lower) {
+        for (Nucleotide n : lower) {
             n.setBound(false);
         }
-        for (Nucleotide n: upper) {
+        for (Nucleotide n : upper) {
             n.setBound(false);
         }
         computeBindingIndices();
@@ -82,28 +67,30 @@ public class DSDNASequence {
                 inRange = true;
                 boundIndexStart = i;
             }
-            if (sequence.getNucleotide(i).isBound() && i == sequence.getLength()-1) {
+            if (sequence.getNucleotide(i).isBound() && i == sequence.getLength() - 1) {
                 boundIndexEnd = i;
                 break;
             }
             if (!sequence.getNucleotide(i).isBound() && inRange) {
-                boundIndexEnd = i;
+                boundIndexEnd = i - 1; // Get the previous value
                 break;
             }
         }
-        return new int[] { boundIndexStart, boundIndexEnd};
+        return new int[]{boundIndexStart, boundIndexEnd};
     }
 
-    public boolean isFullyBound() {
-        return upper.isFullyBound() && lower.isFullyBound();
+    public boolean isDenatured() {
+        return upper.isUnbound() && lower.isUnbound();
     }
+
     /**
      * The sequence is the SSDNA to which the primer needs to attach.
      * The sequence is reversed, complemented, and then searched for the pattern
      * provided in the primer. Returns the starting index of the pattern contained
      * in the primer.
-     * @param sequence
-     * @param primer
+     *
+     * @param sequence DNA sequence
+     * @param primer The primer to grep for
      * @return index
      */
     private int getBindingIndex(SSDNASequence sequence, SSDNASequence primer) {
@@ -112,13 +99,14 @@ public class DSDNASequence {
         if (sequence.contains(primerComplement)) {
             bindingIndex = sequence.getStartingIndex(primerComplement);
         }
-        return bindingIndex;
+        return bindingIndex + primer.getLength() - 1;
     }
 
     /**
      * Starts binding nucleotides from the index location onwards.
-     * @param sequence
-     * @param index
+     *
+     * @param sequence DNA sequence
+     * @param index location from where binding needs to start
      */
     private void bindSequence(SSDNASequence sequence, int index) {
         try {
@@ -128,88 +116,127 @@ public class DSDNASequence {
         }
     }
 
-    private SSDNASequence createProductFromBoundStrand(SSDNASequence parent) {
+    private SSDNASequence createComplementOfBoundStrand(SSDNASequence sequence) {
         List<Nucleotide> list = new ArrayList<>();
-        for (var n : parent){
+        for (var n : sequence) {
             if (n.isBound()) {
                 Nucleotide n2 = n.getComplement();
                 n2.setBound(true);
                 list.add(n2);
             }
         }
-        return new SSDNASequence(list).getReversed();
+        Collections.reverse(list);
+        return new SSDNASequence(list);
     }
 
     public DSDNASequence[] polymerize(DSDNASequence goi) {
+        DSDNASequence duplicate0 = this.clone();
+        DSDNASequence duplicate1 = this.clone();
+
+        //Locate and bind on lower strand of the top child
         SSDNASequence fwdPrimer = goi.getForwardPrimer();
-        int upperBindingIndex = getBindingIndex(lower, fwdPrimer);
-        bindSequence(lower, upperBindingIndex);
+        int bindingIndex = getBindingIndex(duplicate1.lower, fwdPrimer);
+        bindSequence(duplicate1.lower, bindingIndex);
+        duplicate1.upper = createComplementOfBoundStrand(duplicate1.lower);
+        duplicate1.computeBindingIndices();
+
+        //Locate and bind on the upper strand of the bottom child
         SSDNASequence revPrimer = goi.getReversePrimer();
-        int lowerBindingIndex = getBindingIndex(upper, revPrimer);
-        bindSequence(upper, lowerBindingIndex);
+        bindingIndex = getBindingIndex(duplicate0.upper, revPrimer);
+        bindSequence(duplicate0.upper, bindingIndex);
+        duplicate0.lower = createComplementOfBoundStrand(duplicate0.upper);
+        duplicate0.computeBindingIndices();
+
         DSDNASequence[] result = new DSDNASequence[2];
-        SSDNASequence parentLower = this.lower;
-        this.lower = createProductFromBoundStrand(upper);
-        result[0] = this;
-        computeBindingIndices();
-        SSDNASequence newUpper = createProductFromBoundStrand(parentLower);
-        DSDNASequence product = null;
-        product = new DSDNASequence(newUpper, parentLower);
-        result[1] = product;
+        result[0] = duplicate0;
+        result[1] = duplicate1;
         return result;
-    }
-
-    public SSDNASequence getUpper() {
-        return upper;
-    }
-
-    public SSDNASequence getLower() {
-        return lower;
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("DSDNA\n");
-
         builder.append("\tUpper bound-range 5'[" + upperBoundIndexStart
                 + "," + upperBoundIndexEnd + "]3'\n");
         builder.append("\tLower bound-range 5'[" + lowerBoundIndexStart
                 + "," + lowerBoundIndexEnd + "]3'\n");
-        String str =  mergeStrands();
+        String str = mergeStrands();
         builder.append(str);
         return builder.toString();
     }
 
     private String mergeStrands() {
-        int length = Math.max(upper.getLength(), lower.getLength());
-        char[] arrayUpper = new char[length];
-        char[] arrayLower = new char[length];
-        int gap = upperBoundIndexStart - lowerBoundIndexStart;
-        SSDNASequence reversedLower = lower.getReversed();
-        for (int top = 0, bottom = 0, k = 0; k < length; k++) {
-            if (gap > 0 && top < gap || bottom >= lower.getLength()) {
-                Nucleotide n = upper.getNucleotide(top++);
-                char base = n.getBase();
-                if (!n.isBound())
-                    base = (char)(base+32);
-                arrayUpper[k] = base;
-                arrayLower[k] = (char)(95);
-            } else if (gap < 0 && bottom < gap || top >= upper.getLength()) {
-                Nucleotide n = reversedLower.getNucleotide(bottom++);
-                char base = n.getBase();
-                if (!n.isBound())
-                    base = (char)(base+32);
-                arrayUpper[k] = (char)(95);
-                arrayLower[k] = base;
-            }
-            else {
-                arrayUpper[k] = upper.getNucleotide(top++).getBase();
-                arrayLower[k] = reversedLower.getNucleotide(bottom++).getBase();
-            }
+        StringBuilder uBuilder = new StringBuilder();
+        StringBuilder lBuilder = new StringBuilder();
+
+        uBuilder.append(upper.asBindingSensitiveString());
+        lBuilder.append(lower.asBindingSensitiveString()).reverse();
+        if (!isDenatured()) {
+          addPadding(lBuilder, uBuilder);
         }
-        return "5'["+String.valueOf(arrayUpper) +
-                "]3'\n" + "3'[" +
-                String.valueOf(arrayLower) + "]5'";
+        uBuilder.insert(0, "5'[");
+        uBuilder.append("]3'\n3'[");
+        uBuilder.append(lBuilder);
+        uBuilder.append("]5'");
+        return uBuilder.toString();
+    }
+
+    private void addPadding(StringBuilder lowerBuilder, StringBuilder upperBuilder) {
+        int ts = upperBoundIndexStart;
+        int be = lowerBoundIndexEnd;
+        int ue = upperBoundIndexEnd;
+        int ls = lowerBoundIndexStart;
+        int ul = upper.getLength();
+        int bl = lower.getLength();
+        int leftGap = Math.abs(ts - (bl - be - 1));
+        int rightGap = Math.abs((ul - ue - 1) - ls);
+        String leftPadding = "";
+        String rightPadding = "";
+
+        if (leftGap > 0) {
+            leftPadding = getPadding(leftGap);
+        }
+        if (rightGap > 0) {
+            rightPadding = getPadding(rightGap);
+        }
+
+        if (upperBuilder.length() < lowerBuilder.length()) {
+            if (!leftPadding.isEmpty())
+                upperBuilder.insert(0, leftPadding);
+            if (!rightPadding.isEmpty())
+                upperBuilder.append(rightPadding);
+        } else if (lowerBuilder.length() < upperBuilder.length()) {
+            if (!leftPadding.isEmpty())
+                lowerBuilder.insert(0, leftPadding);
+            if (!rightPadding.isEmpty())
+                lowerBuilder.append(rightPadding);
+        }
+    }
+
+    private String getPadding(int number) {
+        if (number == 0)
+            return "";
+        StringBuilder gapBuilder = new StringBuilder();
+        while (number > 0) {
+            gapBuilder.append("_");
+            number--;
+        }
+        return gapBuilder.toString();
+    }
+
+
+    @Override
+    public DSDNASequence clone() {
+        try {
+            DSDNASequence clone = (DSDNASequence) super.clone();
+            clone.lower = lower.clone();
+            clone.upper = upper.clone();
+            clone.forwardPrimer = forwardPrimer.clone();
+            clone.reversePrimer = reversePrimer.clone();
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }
