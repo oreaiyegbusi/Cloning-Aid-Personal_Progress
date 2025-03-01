@@ -157,10 +157,16 @@ public class DSDNASequence implements Cloneable {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("DSDNA\n");
-        builder.append("\tUpper bound-range 5'[" + upperBoundIndexStart
-                + "," + upperBoundIndexEnd + "]3'\n");
-        builder.append("\tLower bound-range 5'[" + lowerBoundIndexStart
-                + "," + lowerBoundIndexEnd + "]3'\n");
+        builder.append("\tUpper bound-range 5'[");
+        builder.append(upperBoundIndexStart);
+        builder.append(",");
+        builder.append(upperBoundIndexEnd);
+        builder.append("]3'\n");
+        builder.append("\tLower bound-range 5'[");
+        builder.append(lowerBoundIndexStart);
+        builder.append(",");
+        builder.append(lowerBoundIndexEnd);
+        builder.append("]3'\n");
         String str = mergeStrands();
         builder.append(str);
         return builder.toString();
