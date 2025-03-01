@@ -65,10 +65,20 @@ public class PCRTester {
         donor.denature();
         System.out.println("DENATURED DONOR:\n"+donor);
         DSDNASequence[] cycle1 = donor.polymerize(goi);
-        System.out.println("Child[0]\n"+cycle1[0]);
-        System.out.println("Child[1]\n"+cycle1[1]);
+
+        System.out.println("GOI:\n"+goi);
         System.out.println("Fwd Primer:" + goi.getForwardPrimer());
         System.out.println("Rev Primer:" + goi.getReversePrimer());
-        System.out.println("GOI:\n"+goi);
+
+        System.out.println("Child[L0][1]\n"+cycle1[0]);
+        System.out.println("Child[L0][2]\n"+cycle1[1]);
+        cycle1[0].denature();
+        cycle1[1].denature();
+        DSDNASequence[] cycle1_top = cycle1[0].polymerize(goi);
+        DSDNASequence[] cycle1_bottom = cycle1[1].polymerize(goi);
+        System.out.println("Child[L1][1]\n"+cycle1_top[0]);
+        System.out.println("Child[L1][2]\n"+cycle1_top[1]);
+        System.out.println("Child[L1][3]\n"+cycle1_bottom[0]);
+        System.out.println("Child[L1][4]\n"+cycle1_bottom[1]);
     }
 }
