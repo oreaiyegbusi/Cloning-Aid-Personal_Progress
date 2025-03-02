@@ -83,7 +83,7 @@ public class PCRTester {
 
         DSDNASequence[] cycle1 = null;
         try {
-            cycle1 = donor.polymerize();
+            cycle1 = donor.runPolymerase();
         } catch (CloningAidException e) {
             System.err.println(e.getMessage());
             System.exit(0);
@@ -98,8 +98,8 @@ public class PCRTester {
         try {
             cycle1[0].annealPrimers(fwdPrimer, revPrimer);
             cycle1[1].annealPrimers(fwdPrimer, revPrimer);
-            cycle1_top = cycle1[0].polymerize();
-            cycle1_bottom = cycle1[1].polymerize();
+            cycle1_top = cycle1[0].runPolymerase();
+            cycle1_bottom = cycle1[1].runPolymerase();
         } catch (CloningAidException e) {
             throw new RuntimeException(e);
         }

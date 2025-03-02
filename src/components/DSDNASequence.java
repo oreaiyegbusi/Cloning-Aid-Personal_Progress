@@ -124,7 +124,12 @@ public class DSDNASequence implements Cloneable {
         this.revPrimer = revPrimer;
     }
 
-    public DSDNASequence[] polymerize() throws CloningAidException {
+    /**
+     * The DSDNA has to be annealed with primers before this call is made.
+     * @return The children after polymerase runs through
+     * @throws CloningAidException
+     */
+    public DSDNASequence[] runPolymerase() throws CloningAidException {
        if (fwdPrimer == null || revPrimer == null) {
            throw new CloningAidException("Primers are not annealed!");
        }
