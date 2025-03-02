@@ -7,8 +7,18 @@ import java.util.List;
 public class DSDNASequence implements Cloneable {
     /**
      * The Donor and GOI are represented by this class
+     * The Reverse primer attaches to the  Sense (Upper),
+     * and the Forward Primer attaches to the antiSense (lower)
+     * strand.
      */
-    private SSDNASequence lower, upper;
+    private SSDNASequence antiSense, sense;
+
+    /**
+     *  The forward primer attaches to the start codon of the
+     *  template DNA (the anti-sense strand).
+     *  The reverse primer attaches to the stop codon of the
+     *  complementary strand of DNA (the sense strand)
+     */
     private int upperBoundIndexStart = -1, upperBoundIndexEnd = -1;
     private int lowerBoundIndexStart = -1, lowerBoundIndexEnd = -1;
     private Primer fwdPrimer, revPrimer;
@@ -18,41 +28,41 @@ public class DSDNASequence implements Cloneable {
         if (rawDNA.getLength() < 20 || rawDNA.getLength() > 20000)
             throw new IllegalArgumentException("Raw DNA sequence out " +
                     "of limits [ 20 < length < 20000");
-        upper = rawDNA;
-        lower = upper.getComplement().getReversed();
-        for (Nucleotide n : upper)
+        sense = rawDNA;
+        antiSense = sense.getComplement().getReversed();
+        for (Nucleotide n : sense)
             n.setBound(true);
-        for (Nucleotide n : lower)
+        for (Nucleotide n : antiSense)
             n.setBound(true);
         computeBindingIndices();
     }
 
     public Primer createForwardPrimer(){
-        return new Primer(upper.getSubSequence(0, 20));
+        return new Primer(sense.getSubSequence(0, 20));
     }
 
     public Primer createReversePrimer(){
-        return new Primer(lower.getSubSequence(0, 20));
+        return new Primer(antiSense.getSubSequence(0, 20));
     }
 
     /**
      * Unbinds each nucleotide separating the DSDNA
      */
     public void denature() {
-        for (Nucleotide n : lower) {
+        for (Nucleotide n : antiSense) {
             n.setBound(false);
         }
-        for (Nucleotide n : upper) {
+        for (Nucleotide n : sense) {
             n.setBound(false);
         }
         computeBindingIndices();
     }
 
     private void computeBindingIndices() {
-        int[] indices = computeBindingIndices(upper);
+        int[] indices = computeBindingIndices(sense);
         upperBoundIndexStart = indices[0];
         upperBoundIndexEnd = indices[1];
-        indices = computeBindingIndices(lower);
+        indices = computeBindingIndices(antiSense);
         lowerBoundIndexStart = indices[0];
         lowerBoundIndexEnd = indices[1];
     }
@@ -79,7 +89,7 @@ public class DSDNASequence implements Cloneable {
     }
 
     public boolean isNotDenatured() {
-        return upper.isBound() || lower.isBound();
+        return sense.isBound() || antiSense.isBound();
     }
 
     /**
@@ -115,6 +125,15 @@ public class DSDNASequence implements Cloneable {
         }
     }
 
+    /**
+     *  The forward primer binds to the antisense strand of the DNA
+     *  template, while the reverse primer binds to the sense strand,
+     *  allowing them to flank the target region that needs to be
+     *  amplified.
+     * @param fwdPrimer
+     * @param revPrimer
+     * @throws CloningAidException
+     */
     public void annealPrimers(Primer fwdPrimer,
                               Primer revPrimer)
             throws CloningAidException {
@@ -135,15 +154,15 @@ public class DSDNASequence implements Cloneable {
        }
        // The clones are created denatured.
         DSDNASequence duplicate0 = this.clone();
-        int bindingIndex = getBindingIndex(duplicate0.upper, revPrimer);
-        bindSequence(duplicate0.upper, bindingIndex);
-        duplicate0.lower = createComplementOfBoundStrand(duplicate0.upper);
+        int bindingIndex = getBindingIndex(duplicate0.sense, revPrimer);
+        bindSequence(duplicate0.sense, bindingIndex);
+        duplicate0.antiSense = createComplementOfBoundStrand(duplicate0.sense);
         duplicate0.computeBindingIndices();
 
         DSDNASequence duplicate1 = this.clone();
-        bindingIndex = getBindingIndex(duplicate1.lower, fwdPrimer);
-        bindSequence(duplicate1.lower, bindingIndex);
-        duplicate1.upper = createComplementOfBoundStrand(duplicate1.lower);
+        bindingIndex = getBindingIndex(duplicate1.antiSense, fwdPrimer);
+        bindSequence(duplicate1.antiSense, bindingIndex);
+        duplicate1.sense = createComplementOfBoundStrand(duplicate1.antiSense);
         duplicate1.computeBindingIndices();
 
         DSDNASequence[] result = new DSDNASequence[2];
@@ -182,8 +201,8 @@ public class DSDNASequence implements Cloneable {
         StringBuilder uBuilder = new StringBuilder();
         StringBuilder lBuilder = new StringBuilder();
 
-        uBuilder.append(upper.asBindingSensitiveString());
-        lBuilder.append(lower.asBindingSensitiveString()).reverse();
+        uBuilder.append(sense.asBindingSensitiveString());
+        lBuilder.append(antiSense.asBindingSensitiveString()).reverse();
         if (isNotDenatured()) {
           addPadding(lBuilder, uBuilder);
         }
@@ -199,8 +218,8 @@ public class DSDNASequence implements Cloneable {
         int be = lowerBoundIndexEnd;
         int ue = upperBoundIndexEnd;
         int ls = lowerBoundIndexStart;
-        int ul = upper.getLength();
-        int bl = lower.getLength();
+        int ul = sense.getLength();
+        int bl = antiSense.getLength();
         int leftGap = Math.abs(ts - (bl - be - 1));
         int rightGap = Math.abs((ul - ue - 1) - ls);
         String leftPadding = "";
@@ -242,8 +261,8 @@ public class DSDNASequence implements Cloneable {
     public DSDNASequence clone() {
         try {
             DSDNASequence clone = (DSDNASequence) super.clone();
-            clone.lower = lower.clone();
-            clone.upper = upper.clone();
+            clone.antiSense = antiSense.clone();
+            clone.sense = sense.clone();
             clone.fwdPrimer = null;
             clone.revPrimer = null;
             return clone;
