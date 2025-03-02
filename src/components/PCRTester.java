@@ -61,14 +61,17 @@ public class PCRTester {
               System.exit(0);
         }
 
+          // Create the Primers
         donor = new DSDNASequence(seqDonor);
-        goi = new DSDNASequence(seqGoi);
         Primer fwdPrimer = goi.createForwardPrimer();
         Primer revPrimer = goi.createReversePrimer();
 
+        // Create and Denature the GOI
+        goi = new DSDNASequence(seqGoi);
         donor.denature();
         System.out.println("DENATURED DONOR:\n"+donor);
 
+        //Anneal the primers to the denatured donor
         try {
             donor.annealPrimers(fwdPrimer, revPrimer);
         } catch (CloningAidException e) {
@@ -81,6 +84,7 @@ public class PCRTester {
         System.out.println("Fwd Primer:" + fwdPrimer);
         System.out.println("Rev Primer:" + revPrimer);
 
+        // Run the polymerase chain reaction
         DSDNASequence[] cycle1 = null;
         try {
             cycle1 = donor.runPolymerase();
@@ -90,14 +94,19 @@ public class PCRTester {
         }
         System.out.println("Child[L0][0]\n"+cycle1[0]);
         System.out.println("Child[L0][1]\n"+cycle1[1]);
+
+        // Denature the children
         cycle1[0].denature();
         cycle1[1].denature();
 
         DSDNASequence[] cycle1_top = null;
         DSDNASequence[] cycle1_bottom = null;
+
         try {
+            // Anneal the children with primers
             cycle1[0].annealPrimers(fwdPrimer, revPrimer);
             cycle1[1].annealPrimers(fwdPrimer, revPrimer);
+            // Run Polymerase chain reaction
             cycle1_top = cycle1[0].runPolymerase();
             cycle1_bottom = cycle1[1].runPolymerase();
         } catch (CloningAidException e) {
