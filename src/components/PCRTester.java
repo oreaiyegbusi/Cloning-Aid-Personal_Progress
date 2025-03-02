@@ -68,7 +68,6 @@ public class PCRTester {
         Primer revPrimer = goi.createReversePrimer();
 
         // Create and Denature the GOI
-        goi = new DSDNASequence(seqGoi);
         donor.denature();
         System.out.println("DENATURED DONOR:\n"+donor);
 
