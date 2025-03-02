@@ -60,9 +60,10 @@ public class PCRTester {
               System.err.println(e.getMessage());
               System.exit(0);
         }
+        goi = new DSDNASequence(seqGoi);
+        donor = new DSDNASequence(seqDonor);
 
           // Create the Primers
-        donor = new DSDNASequence(seqDonor);
         Primer fwdPrimer = goi.createForwardPrimer();
         Primer revPrimer = goi.createReversePrimer();
 
