@@ -43,11 +43,6 @@ public class SSDNASequence  implements Cloneable, Iterable<Nucleotide>{
         this.sequence.addAll(List.of(nucleotides));
     }
 
-    public SSDNASequence addNucleotide(Nucleotide... nucleotides) {
-        sequence.addAll(List.of(nucleotides));
-        return this;
-    }
-
     public SSDNASequence getComplement() {
         List<Nucleotide> list = new ArrayList<>();
         for (Nucleotide n : sequence) {
@@ -120,9 +115,9 @@ public class SSDNASequence  implements Cloneable, Iterable<Nucleotide>{
         return sequence.iterator();
     }
 
-    public boolean isUnbound(){
+    public boolean isBound(){
         for (Nucleotide n : sequence) {
-            if (n.isBound())
+            if (!n.isBound())
                 return false;
         }
         return true;

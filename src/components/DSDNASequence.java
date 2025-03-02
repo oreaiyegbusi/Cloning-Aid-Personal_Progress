@@ -79,7 +79,7 @@ public class DSDNASequence implements Cloneable {
     }
 
     public boolean isNotDenatured() {
-        return !upper.isUnbound() || !lower.isUnbound();
+        return upper.isBound() || lower.isBound();
     }
 
     /**

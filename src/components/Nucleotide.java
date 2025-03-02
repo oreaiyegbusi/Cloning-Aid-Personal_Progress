@@ -42,8 +42,7 @@ public abstract class Nucleotide implements Cloneable{
     @Override
     public Nucleotide clone() {
         try {
-            Nucleotide clone = (Nucleotide) super.clone();
-            return clone;
+            return (Nucleotide) super.clone();
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }
