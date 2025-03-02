@@ -24,8 +24,8 @@ public class PCRTester {
     GGATGACCAGGATGCCATTGCTGTGGAAGCTGCCTGCACTAATGTTCCGGCGTTATTTCTTGATGTCTCTGA
     */
     public static void main(String[] args) {
-        DSDNASequence goi, donor;
-        SSDNASequence seqGoi, seqDonor;
+        DSDNASequence goi = null, donor = null;
+        SSDNASequence seqGoi = null, seqDonor = null;
           try {
 
             seqGoi = new SSDNASequence("ATCCGGATATAGTTCCTCCTTTCAG");
@@ -57,28 +57,55 @@ public class PCRTester {
     */
 
           } catch (CloningAidException e) {
-            throw new RuntimeException(e);
+              System.err.println(e.getMessage());
+              System.exit(0);
         }
 
         donor = new DSDNASequence(seqDonor);
         goi = new DSDNASequence(seqGoi);
+        Primer fwdPrimer = goi.createForwardPrimer();
+        Primer revPrimer = goi.createReversePrimer();
+
         donor.denature();
         System.out.println("DENATURED DONOR:\n"+donor);
-        DSDNASequence[] cycle1 = donor.polymerize(goi);
+
+        try {
+            donor.annealPrimers(fwdPrimer, revPrimer);
+        } catch (CloningAidException e) {
+            System.err.println(e.getMessage());
+            System.exit(0);
+        }
 
         System.out.println("GOI:\n"+goi);
-        System.out.println("Fwd Primer:" + goi.getForwardPrimer());
-        System.out.println("Rev Primer:" + goi.getReversePrimer());
 
-        System.out.println("Child[L0][1]\n"+cycle1[0]);
-        System.out.println("Child[L0][2]\n"+cycle1[1]);
+        System.out.println("Fwd Primer:" + fwdPrimer);
+        System.out.println("Rev Primer:" + revPrimer);
+
+        DSDNASequence[] cycle1 = null;
+        try {
+            cycle1 = donor.polymerize();
+        } catch (CloningAidException e) {
+            System.err.println(e.getMessage());
+            System.exit(0);
+        }
+        System.out.println("Child[L0][0]\n"+cycle1[0]);
+        System.out.println("Child[L0][1]\n"+cycle1[1]);
         cycle1[0].denature();
         cycle1[1].denature();
-        DSDNASequence[] cycle1_top = cycle1[0].polymerize(goi);
-        DSDNASequence[] cycle1_bottom = cycle1[1].polymerize(goi);
-        System.out.println("Child[L1][1]\n"+cycle1_top[0]);
-        System.out.println("Child[L1][2]\n"+cycle1_top[1]);
-        System.out.println("Child[L1][3]\n"+cycle1_bottom[0]);
-        System.out.println("Child[L1][4]\n"+cycle1_bottom[1]);
+
+        DSDNASequence[] cycle1_top = null;
+        DSDNASequence[] cycle1_bottom = null;
+        try {
+            cycle1[0].annealPrimers(fwdPrimer, revPrimer);
+            cycle1[1].annealPrimers(fwdPrimer, revPrimer);
+            cycle1_top = cycle1[0].polymerize();
+            cycle1_bottom = cycle1[1].polymerize();
+        } catch (CloningAidException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println("Child[L1][0]\n"+cycle1_top[0]);
+        System.out.println("Child[L1][1]\n"+cycle1_top[1]);
+        System.out.println("Child[L1][2]\n"+cycle1_bottom[0]);
+        System.out.println("Child[L1][3]\n"+cycle1_bottom[1]);
     }
 }

@@ -70,8 +70,8 @@ public class SSDNASequence  implements Cloneable, Iterable<Nucleotide>{
         return total;
     }
 
-    public SSDNASequence getSubSequence(int start, int end) {
-        return new SSDNASequence(sequence.subList(start, end));
+    public List<Nucleotide> getSubSequence(int start, int end) {
+        return sequence.subList(start, end);
     }
 
     public SSDNASequence getReversed() {
