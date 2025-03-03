@@ -100,13 +100,9 @@ public class SSDNASequence  implements Cloneable, Iterable<Nucleotide>{
         return sequenceAsString.contains(thatSequenceAsString);
     }
 
-    public int getStartingIndex(SSDNASequence that) {
-            try {
+    public int getStartingIndex(SSDNASequence that) throws CloningAidException {
                 if (!contains(that))
                     throw new CloningAidException("Sequence does not exist in this strand!");
-            } catch (CloningAidException e) {
-                System.err.println(e.getMessage());
-            }
             return asBindingInsensitiveString().indexOf(that.asBindingInsensitiveString());
     }
 

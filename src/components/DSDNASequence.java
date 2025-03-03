@@ -22,6 +22,7 @@ public class DSDNASequence implements Cloneable {
     private int upperBoundIndexStart = -1, upperBoundIndexEnd = -1;
     private int lowerBoundIndexStart = -1, lowerBoundIndexEnd = -1;
     private Primer annealedFwdPrimer, annealedRevPrimer;
+    private DSDNASequence[] children;
 
     public DSDNASequence(SSDNASequence rawDNA) {
         if (rawDNA.getLength() < 20 || rawDNA.getLength() > 20000)
@@ -101,11 +102,14 @@ public class DSDNASequence implements Cloneable {
      * @param primer The primer to grep for
      * @return index
      */
-    private int getBindingIndex(SSDNASequence sequence, SSDNASequence primer) {
+    private int getBindingIndex(SSDNASequence sequence, SSDNASequence primer)
+            throws CloningAidException {
         int bindingIndex = -1;
         SSDNASequence primerComplement = primer.getComplement().getReversed();
         if (sequence.contains(primerComplement)) {
             bindingIndex = sequence.getStartingIndex(primerComplement);
+        } else {
+            throw new CloningAidException("The Gene Of Interest is not present in the Donor");
         }
         return bindingIndex + primer.getLength() - 1;
     }
@@ -140,6 +144,9 @@ public class DSDNASequence implements Cloneable {
             throw new CloningAidException("Not denatured - Anneal failed!");
         this.annealedFwdPrimer = fwdPrimer;
         this.annealedRevPrimer = revPrimer;
+        children = new DSDNASequence[] { this.clone(), this.clone()};
+        children[0].upperBoundIndexStart = getBindingIndex(sense, annealedRevPrimer);
+        children[1].lowerBoundIndexStart = getBindingIndex(antiSense, annealedFwdPrimer);
     }
 
     /**
@@ -152,22 +159,14 @@ public class DSDNASequence implements Cloneable {
            throw new CloningAidException("Primers are not annealed!");
        }
        // The clones are created denatured.
-        DSDNASequence duplicate0 = this.clone();
-        int bindingIndex = getBindingIndex(duplicate0.sense, annealedRevPrimer);
-        bindSequence(duplicate0.sense, bindingIndex);
-        duplicate0.antiSense = createComplementOfBoundStrand(duplicate0.sense);
-        duplicate0.computeBindingIndices();
+        bindSequence(children[0].sense, children[0].upperBoundIndexStart);
+        children[0].antiSense = createComplementOfBoundStrand(children[0].sense);
+        children[0].computeBindingIndices();
 
-        DSDNASequence duplicate1 = this.clone();
-        bindingIndex = getBindingIndex(duplicate1.antiSense, annealedFwdPrimer);
-        bindSequence(duplicate1.antiSense, bindingIndex);
-        duplicate1.sense = createComplementOfBoundStrand(duplicate1.antiSense);
-        duplicate1.computeBindingIndices();
-
-        DSDNASequence[] result = new DSDNASequence[2];
-        result[0] = duplicate0;
-        result[1] = duplicate1;
-        return result;
+        bindSequence(children[1].antiSense, children[1].lowerBoundIndexStart);
+        children[1].sense = createComplementOfBoundStrand(children[1].antiSense);
+        children[1].computeBindingIndices();
+        return children;
     }
 
     private SSDNASequence createComplementOfBoundStrand(SSDNASequence sequence) {
