@@ -21,8 +21,7 @@ public class DSDNASequence implements Cloneable {
      */
     private int upperBoundIndexStart = -1, upperBoundIndexEnd = -1;
     private int lowerBoundIndexStart = -1, lowerBoundIndexEnd = -1;
-    private Primer fwdPrimer, revPrimer;
-
+    private Primer annealedFwdPrimer, annealedRevPrimer;
 
     public DSDNASequence(SSDNASequence rawDNA) {
         if (rawDNA.getLength() < 20 || rawDNA.getLength() > 20000)
@@ -139,8 +138,8 @@ public class DSDNASequence implements Cloneable {
             throws CloningAidException {
         if (this.isNotDenatured())
             throw new CloningAidException("Not denatured - Anneal failed!");
-        this.fwdPrimer = fwdPrimer;
-        this.revPrimer = revPrimer;
+        this.annealedFwdPrimer = fwdPrimer;
+        this.annealedRevPrimer = revPrimer;
     }
 
     /**
@@ -149,18 +148,18 @@ public class DSDNASequence implements Cloneable {
      * @throws CloningAidException
      */
     public DSDNASequence[] runPolymerase() throws CloningAidException {
-       if (fwdPrimer == null || revPrimer == null) {
+       if (annealedFwdPrimer == null || annealedRevPrimer == null) {
            throw new CloningAidException("Primers are not annealed!");
        }
        // The clones are created denatured.
         DSDNASequence duplicate0 = this.clone();
-        int bindingIndex = getBindingIndex(duplicate0.sense, revPrimer);
+        int bindingIndex = getBindingIndex(duplicate0.sense, annealedRevPrimer);
         bindSequence(duplicate0.sense, bindingIndex);
         duplicate0.antiSense = createComplementOfBoundStrand(duplicate0.sense);
         duplicate0.computeBindingIndices();
 
         DSDNASequence duplicate1 = this.clone();
-        bindingIndex = getBindingIndex(duplicate1.antiSense, fwdPrimer);
+        bindingIndex = getBindingIndex(duplicate1.antiSense, annealedFwdPrimer);
         bindSequence(duplicate1.antiSense, bindingIndex);
         duplicate1.sense = createComplementOfBoundStrand(duplicate1.antiSense);
         duplicate1.computeBindingIndices();
@@ -263,8 +262,8 @@ public class DSDNASequence implements Cloneable {
             DSDNASequence clone = (DSDNASequence) super.clone();
             clone.antiSense = antiSense.clone();
             clone.sense = sense.clone();
-            clone.fwdPrimer = null;
-            clone.revPrimer = null;
+            clone.annealedFwdPrimer = null;
+            clone.annealedRevPrimer = null;
             return clone;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
