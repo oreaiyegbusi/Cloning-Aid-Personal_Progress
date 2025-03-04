@@ -12,7 +12,7 @@ public class DSDNASequence implements Cloneable {
      * strand.
      */
     private SSDNASequence antiSense, sense;
-
+    private int senseBindingStartIndex, antiSenseBindingStartIndex;
     /**
      *  The forward primer attaches to the start codon of the
      *  template DNA (the anti-sense strand).
@@ -22,7 +22,6 @@ public class DSDNASequence implements Cloneable {
     private int upperBoundIndexStart = -1, upperBoundIndexEnd = -1;
     private int lowerBoundIndexStart = -1, lowerBoundIndexEnd = -1;
     private Primer annealedFwdPrimer, annealedRevPrimer;
-    private DSDNASequence[] children;
 
     public DSDNASequence(SSDNASequence rawDNA) {
         if (rawDNA.getLength() < 20 || rawDNA.getLength() > 20000)
@@ -144,9 +143,8 @@ public class DSDNASequence implements Cloneable {
             throw new CloningAidException("Not denatured - Anneal failed!");
         this.annealedFwdPrimer = fwdPrimer;
         this.annealedRevPrimer = revPrimer;
-        children = new DSDNASequence[] { this.clone(), this.clone()};
-        children[0].upperBoundIndexStart = getBindingIndex(sense, annealedRevPrimer);
-        children[1].lowerBoundIndexStart = getBindingIndex(antiSense, annealedFwdPrimer);
+        senseBindingStartIndex = getBindingIndex(sense, annealedRevPrimer);
+        antiSenseBindingStartIndex = getBindingIndex(antiSense, annealedFwdPrimer);
     }
 
     /**
@@ -158,12 +156,13 @@ public class DSDNASequence implements Cloneable {
        if (annealedFwdPrimer == null || annealedRevPrimer == null) {
            throw new CloningAidException("Primers are not annealed!");
        }
-       // The clones are created denatured.
-        bindSequence(children[0].sense, children[0].upperBoundIndexStart);
+        DSDNASequence[] children = new DSDNASequence[] { this.clone(), this.clone()};
+        // The clones are created denatured.
+        bindSequence(children[0].sense, senseBindingStartIndex);
         children[0].antiSense = createComplementOfBoundStrand(children[0].sense);
         children[0].computeBindingIndices();
 
-        bindSequence(children[1].antiSense, children[1].lowerBoundIndexStart);
+        bindSequence(children[1].antiSense, antiSenseBindingStartIndex);
         children[1].sense = createComplementOfBoundStrand(children[1].antiSense);
         children[1].computeBindingIndices();
         return children;
