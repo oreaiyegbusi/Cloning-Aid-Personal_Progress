@@ -1,9 +1,6 @@
 package components;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class SSDNASequence  implements Cloneable, Iterable<Nucleotide>{
     /**
@@ -155,5 +152,18 @@ public class SSDNASequence  implements Cloneable, Iterable<Nucleotide>{
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SSDNASequence that = (SSDNASequence) o;
+        return Objects.equals(sequence, that.sequence);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(sequence);
     }
 }
