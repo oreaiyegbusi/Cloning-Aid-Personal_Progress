@@ -21,7 +21,7 @@ public class DSDNASequence implements Cloneable {
      */
     private int upperBoundIndexStart = -1, upperBoundIndexEnd = -1;
     private int lowerBoundIndexStart = -1, lowerBoundIndexEnd = -1;
-    private Primer annealedFwdPrimer, annealedRevPrimer;
+    //private Primer annealedFwdPrimer, annealedRevPrimer;
 
     public DSDNASequence(SSDNASequence rawDNA) {
         if (rawDNA.getLength() < 20 || rawDNA.getLength() > 20000)
@@ -141,10 +141,8 @@ public class DSDNASequence implements Cloneable {
             throws CloningAidException {
         if (this.isNotDenatured())
             throw new CloningAidException("Not denatured - Anneal failed!");
-        this.annealedFwdPrimer = fwdPrimer;
-        this.annealedRevPrimer = revPrimer;
-        senseBindingStartIndex = getBindingIndex(sense, annealedRevPrimer);
-        antiSenseBindingStartIndex = getBindingIndex(antiSense, annealedFwdPrimer);
+        senseBindingStartIndex = getBindingIndex(sense, revPrimer);
+        antiSenseBindingStartIndex = getBindingIndex(antiSense, fwdPrimer);
     }
 
     /**
@@ -153,9 +151,6 @@ public class DSDNASequence implements Cloneable {
      * @throws CloningAidException
      */
     public DSDNASequence[] runPolymerase() throws CloningAidException {
-       if (annealedFwdPrimer == null || annealedRevPrimer == null) {
-           throw new CloningAidException("Primers are not annealed!");
-       }
         DSDNASequence[] children = new DSDNASequence[] { this.clone(), this.clone()};
         // The clones are created denatured.
         bindSequence(children[0].sense, senseBindingStartIndex);
@@ -260,8 +255,6 @@ public class DSDNASequence implements Cloneable {
             DSDNASequence clone = (DSDNASequence) super.clone();
             clone.antiSense = antiSense.clone();
             clone.sense = sense.clone();
-            clone.annealedFwdPrimer = null;
-            clone.annealedRevPrimer = null;
             return clone;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
