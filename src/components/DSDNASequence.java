@@ -1,9 +1,5 @@
 package components;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 public class DSDNASequence implements Cloneable {
     /**
      * The Donor and GOI are represented by this class
@@ -12,16 +8,13 @@ public class DSDNASequence implements Cloneable {
      * strand.
      */
     private SSDNASequence antiSense, sense;
-    private int senseBindingStartIndex, antiSenseBindingStartIndex;
+    private boolean isAnnealed = false;
     /**
-     *  The forward primer attaches to the start codon of the
-     *  template DNA (the anti-sense strand).
-     *  The reverse primer attaches to the stop codon of the
-     *  complementary strand of DNA (the sense strand)
+     * The forward primer attaches to the start codon of the
+     * template DNA (the anti-sense strand).
+     * The reverse primer attaches to the stop codon of the
+     * complementary strand of DNA (the sense strand)
      */
-    private int upperBoundIndexStart = -1, upperBoundIndexEnd = -1;
-    private int lowerBoundIndexStart = -1, lowerBoundIndexEnd = -1;
-    //private Primer annealedFwdPrimer, annealedRevPrimer;
 
     public DSDNASequence(SSDNASequence rawDNA) {
         if (rawDNA.getLength() < 20 || rawDNA.getLength() > 20000)
@@ -33,15 +26,14 @@ public class DSDNASequence implements Cloneable {
             n.setBound(true);
         for (Nucleotide n : antiSense)
             n.setBound(true);
-        computeBindingIndices();
     }
 
-    public Primer createForwardPrimer(){
-        return new Primer(sense.getSubSequence(0, 20));
+    public Primer createForwardPrimer() {
+        return new Primer(sense);
     }
 
-    public Primer createReversePrimer(){
-        return new Primer(antiSense.getSubSequence(0, 20));
+    public Primer createReversePrimer() {
+        return new Primer(antiSense);
     }
 
     /**
@@ -54,17 +46,8 @@ public class DSDNASequence implements Cloneable {
         for (Nucleotide n : sense) {
             n.setBound(false);
         }
-        computeBindingIndices();
     }
 
-    private void computeBindingIndices() {
-        int[] indices = computeBindingIndices(sense);
-        upperBoundIndexStart = indices[0];
-        upperBoundIndexEnd = indices[1];
-        indices = computeBindingIndices(antiSense);
-        lowerBoundIndexStart = indices[0];
-        lowerBoundIndexEnd = indices[1];
-    }
 
     private int[] computeBindingIndices(SSDNASequence sequence) {
         int boundIndexStart = -1;
@@ -98,7 +81,7 @@ public class DSDNASequence implements Cloneable {
      * in the primer.
      *
      * @param sequence DNA sequence
-     * @param primer The primer to grep for
+     * @param primer   The primer to grep for
      * @return index
      */
     private int getBindingIndex(SSDNASequence sequence, SSDNASequence primer)
@@ -110,151 +93,130 @@ public class DSDNASequence implements Cloneable {
         } else {
             throw new CloningAidException("The Gene Of Interest is not present in the Donor");
         }
-        return bindingIndex + primer.getLength() - 1;
+        return bindingIndex;
     }
 
-    /**
-     * Starts binding nucleotides from the index location onwards.
-     *
-     * @param sequence DNA sequence
-     * @param index location from where binding needs to start
-     */
-    private void bindSequence(SSDNASequence sequence, int index) {
-        try {
-            sequence.bindFrom(index);
-        } catch (CloningAidException e) {
-            System.err.println(e.getMessage());
+
+    private void attachPrimers(Primer forwardPrimer,
+                               Primer reversePrimer) {
+        isAnnealed = true;
+
+        // Bind the primers to the strands
+        for (Nucleotide n : forwardPrimer) {
+            n.setBound(true);
+        }
+        for (Nucleotide n : reversePrimer) {
+            n.setBound(true);
         }
     }
 
+    private boolean isAnnealed() {
+        return isAnnealed;
+    }
+
+
     /**
-     *  The forward primer binds to the antisense strand of the DNA
-     *  template, while the reverse primer binds to the sense strand,
-     *  allowing them to flank the target region that needs to be
-     *  amplified.
-     * @param fwdPrimer
-     * @param revPrimer
+     * The forward primer binds to the antisense strand of the DNA
+     * template, while the reverse primer binds to the sense strand,
+     * allowing them to flank the target region that needs to be
+     * amplified.
+     *
+     * @param forwardPrimer
+     * @param reversePrimer
      * @throws CloningAidException
      */
-    public void annealPrimers(Primer fwdPrimer,
-                              Primer revPrimer)
+    public void annealPrimers(Primer forwardPrimer,
+                              Primer reversePrimer)
             throws CloningAidException {
         if (this.isNotDenatured())
             throw new CloningAidException("Not denatured - Anneal failed!");
-        senseBindingStartIndex = getBindingIndex(sense, revPrimer);
-        antiSenseBindingStartIndex = getBindingIndex(antiSense, fwdPrimer);
+
+        int sbi = getBindingIndex(sense, reversePrimer);
+        int abi = getBindingIndex(antiSense, forwardPrimer);
+        // Anneal primer
+        for (int i = 0; i < reversePrimer.getLength(); i++) {
+            Nucleotide n = sense.getNucleotide(sbi + i);
+            Nucleotide pn = reversePrimer.getReversed().getNucleotide(i).getComplement();
+            if (pn.equals(n)) {
+                n.setBound(true);
+            } else {
+                throw new CloningAidException("Can't bind " + n
+                        + " to " + pn + " on rev primer");
+            }
+        }
+        for (int i = 0; i < forwardPrimer.getLength(); i++) {
+            Nucleotide n = antiSense.getNucleotide(abi + i);
+            Nucleotide pn = forwardPrimer.getReversed().getNucleotide(i).getComplement();
+            if (pn.equals(n)) {
+                n.setBound(true);
+            } else {
+                throw new CloningAidException("Can't bind " + n
+                        + " to " + pn + " on fwd primer");
+            }
+        }
+        attachPrimers(forwardPrimer, reversePrimer);
     }
 
     /**
      * The DSDNA has to be annealed with primers before this call is made.
+     *
      * @return The children after polymerase runs through
      * @throws CloningAidException
      */
     public DSDNASequence[] runPolymerase() throws CloningAidException {
-        DSDNASequence[] children = new DSDNASequence[] { this.clone(), this.clone()};
-        // The clones are created denatured.
-        bindSequence(children[0].sense, senseBindingStartIndex);
-        children[0].antiSense = createComplementOfBoundStrand(children[0].sense);
-        children[0].computeBindingIndices();
-
-        bindSequence(children[1].antiSense, antiSenseBindingStartIndex);
-        children[1].sense = createComplementOfBoundStrand(children[1].antiSense);
-        children[1].computeBindingIndices();
-        return children;
-    }
-
-    private SSDNASequence createComplementOfBoundStrand(SSDNASequence sequence) {
-        List<Nucleotide> list = new ArrayList<>();
-        for (var n : sequence) {
-            if (n.isBound()) {
-                Nucleotide n2 = n.getComplement();
-                n2.setBound(true);
-                list.add(n2);
-            }
+        if (!isAnnealed()) {
+            throw new CloningAidException("Primers are not annealed!");
         }
-        Collections.reverse(list);
-        return new SSDNASequence(list);
+        DSDNASequence[] children = new DSDNASequence[]{this.clone(), this.clone()};
+        // Extend the existing strands.
+        Polymerase.extendSense(children[0]);
+        Polymerase.extendAntiSense(children[1]);
+        isAnnealed = false;
+        return children;
     }
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("DSDNA\n");
-        builder.append("\tUpper bound-range 5'[" + upperBoundIndexStart
-                + "," + upperBoundIndexEnd + "]3'\n");
-        builder.append("\tLower bound-range 5'[" + lowerBoundIndexStart
-                + "," + lowerBoundIndexEnd + "]3'\n");
-        String str = mergeStrands();
-        builder.append(str);
-        return builder.toString();
+        StringBuilder builder1 = new StringBuilder();
+        builder1.append("DSDNA\n");
+        int[] index = computeBindingIndices(sense);
+        builder1.append("\tUpper bound-range 5'[" + index[0]
+                + "," + index[1] + "]3'\n");
+        index = computeBindingIndices(antiSense);
+        builder1.append("\tLower bound-range 5'[" + index[0]
+                + "," + index[1] + "]3'\n");
+        builder1.append(sense.toString());
+        builder1.append("\n3'[");
+        StringBuilder builder2 = new StringBuilder();
+        builder2.append(antiSense.asBindingSensitiveString());
+        builder2.reverse();
+        builder1.append(builder2);
+        builder1.append("]5'");
+        return builder1.toString();
     }
 
-    private String mergeStrands() {
-        StringBuilder uBuilder = new StringBuilder();
-        StringBuilder lBuilder = new StringBuilder();
-
-        uBuilder.append(sense.asBindingSensitiveString());
-        lBuilder.append(antiSense.asBindingSensitiveString()).reverse();
-        if (isNotDenatured()) {
-          addPadding(lBuilder, uBuilder);
-        }
-        uBuilder.insert(0, "5'[");
-        uBuilder.append("]3'\n3'[");
-        uBuilder.append(lBuilder);
-        uBuilder.append("]5'");
-        return uBuilder.toString();
+    protected SSDNASequence getSense() {
+        return sense;
     }
 
-    private void addPadding(StringBuilder lowerBuilder, StringBuilder upperBuilder) {
-        int ts = upperBoundIndexStart;
-        int be = lowerBoundIndexEnd;
-        int ue = upperBoundIndexEnd;
-        int ls = lowerBoundIndexStart;
-        int ul = sense.getLength();
-        int bl = antiSense.getLength();
-        int leftGap = Math.abs(ts - (bl - be - 1));
-        int rightGap = Math.abs((ul - ue - 1) - ls);
-        String leftPadding = "";
-        String rightPadding = "";
-
-        if (leftGap > 0) {
-            leftPadding = getPadding(leftGap);
-        }
-        if (rightGap > 0) {
-            rightPadding = getPadding(rightGap);
-        }
-
-        if (upperBuilder.length() < lowerBuilder.length()) {
-            if (!leftPadding.isEmpty())
-                upperBuilder.insert(0, leftPadding);
-            if (!rightPadding.isEmpty())
-                upperBuilder.append(rightPadding);
-        } else if (lowerBuilder.length() < upperBuilder.length()) {
-            if (!leftPadding.isEmpty())
-                lowerBuilder.insert(0, leftPadding);
-            if (!rightPadding.isEmpty())
-                lowerBuilder.append(rightPadding);
-        }
+    protected void setSense(SSDNASequence sequence) {
+        this.sense = sequence;
     }
 
-    private String getPadding(int number) {
-        if (number == 0)
-            return "";
-        StringBuilder gapBuilder = new StringBuilder();
-        while (number > 0) {
-            gapBuilder.append("_");
-            number--;
-        }
-        return gapBuilder.toString();
+    protected void setAntiSense(SSDNASequence sequence) {
+        this.antiSense = sequence;
     }
 
+    protected SSDNASequence getAntiSense() {
+        return antiSense;
+    }
 
     @Override
     public DSDNASequence clone() {
         try {
             DSDNASequence clone = (DSDNASequence) super.clone();
-            clone.antiSense = antiSense.clone();
             clone.sense = sense.clone();
+            clone.antiSense = antiSense.clone();
             return clone;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();

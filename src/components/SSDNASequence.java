@@ -1,6 +1,9 @@
 package components;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 public class SSDNASequence  implements Cloneable, Iterable<Nucleotide>{
     /**
@@ -97,9 +100,13 @@ public class SSDNASequence  implements Cloneable, Iterable<Nucleotide>{
         return sequenceAsString.contains(thatSequenceAsString);
     }
 
-    public int getStartingIndex(SSDNASequence that) throws CloningAidException {
+    public int getStartingIndex(SSDNASequence that) {
+            try {
                 if (!contains(that))
                     throw new CloningAidException("Sequence does not exist in this strand!");
+            } catch (CloningAidException e) {
+                System.err.println(e.getMessage());
+            }
             return asBindingInsensitiveString().indexOf(that.asBindingInsensitiveString());
     }
 
@@ -152,18 +159,5 @@ public class SSDNASequence  implements Cloneable, Iterable<Nucleotide>{
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        SSDNASequence that = (SSDNASequence) o;
-        return Objects.equals(sequence, that.sequence);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(sequence);
     }
 }

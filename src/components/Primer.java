@@ -4,6 +4,10 @@ import java.util.List;
 
 public class Primer extends SSDNASequence{
 
+    public Primer(SSDNASequence sequence) {
+        this(sequence.getSubSequence(0,20));
+    }
+
     public Primer(String nucleotides) throws CloningAidException {
         super(nucleotides);
         if (nucleotides.length() < 18 || nucleotides.length() > 30)
