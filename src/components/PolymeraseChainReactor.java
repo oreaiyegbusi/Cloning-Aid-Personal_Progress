@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.logging.Logger;
 
 public class PolymeraseChainReactor implements Serializable {
     private DSDNASequence[] result;
@@ -15,7 +16,9 @@ public class PolymeraseChainReactor implements Serializable {
     private final Primer reversePrimer;
     private int cycles = -1;
 
+    @Serial
     private static final long serialVersionUID = 7L;
+    public static final Logger PCRLOGGER = Logger.getLogger("PCR:" + serialVersionUID);
 
     public PolymeraseChainReactor(DSDNASequence goi, DSDNASequence donor) {
         this.goi = goi;
@@ -59,7 +62,7 @@ public class PolymeraseChainReactor implements Serializable {
             }
 
         } catch (CloningAidException e) {
-            System.err.println(e.getMessage());
+            PCRLOGGER.warning(e.getMessage());
             System.exit(0);
         }
     }
@@ -95,9 +98,9 @@ public class PolymeraseChainReactor implements Serializable {
         try (FileOutputStream fileOut = new FileOutputStream(filename);
              ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
             out.writeObject(this);
-            System.out.println("PCR run has been saved to " + filename);
-        } catch (IOException i) {
-            i.printStackTrace();
+            PCRLOGGER.info("PCR run has been saved to " + filename + ".");
+        } catch (IOException e) {
+            PCRLOGGER.warning(e.getMessage());
         }
     }
 
@@ -107,9 +110,9 @@ public class PolymeraseChainReactor implements Serializable {
             // Deserializing an object from the file
             pcr = (PolymeraseChainReactor) in.readObject();
             // Using the deserialized object
-            System.out.println("Deserialized PCR object: " + pcr);
+            PCRLOGGER.info("Deserialized PCR object: " + pcr);
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+            PCRLOGGER.warning(e.getMessage());
         }
         return pcr;
     }
