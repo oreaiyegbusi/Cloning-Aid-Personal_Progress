@@ -88,7 +88,7 @@ public class DSDNASequence implements Cloneable, Serializable {
      */
     private int getBindingIndex(SSDNASequence sequence, SSDNASequence primer)
             throws CloningAidException {
-        int bindingIndex = -1;
+        int bindingIndex;
         SSDNASequence primerComplement = primer.getComplement().getReversed();
         if (sequence.contains(primerComplement)) {
             bindingIndex = sequence.getStartingIndex(primerComplement);
@@ -110,9 +110,9 @@ public class DSDNASequence implements Cloneable, Serializable {
      * allowing them to flank the target region that needs to be
      * amplified.
      *
-     * @param forwardPrimer
-     * @param reversePrimer
-     * @throws CloningAidException
+     * @param forwardPrimer drawn from the antiSense
+     * @param reversePrimer drawn from the sense
+     * @throws CloningAidException If dsDNA is not denatured
      */
     public void annealPrimers(Primer forwardPrimer,
                               Primer reversePrimer)
@@ -150,7 +150,7 @@ public class DSDNASequence implements Cloneable, Serializable {
      * The DSDNA has to be annealed with primers before this call is made.
      *
      * @return The children after polymerase runs through
-     * @throws CloningAidException
+     * @throws CloningAidException If primers are not annealed
      */
     public DSDNASequence[] runPolymerase() throws CloningAidException {
         if (!isAnnealed()) {
@@ -166,16 +166,17 @@ public class DSDNASequence implements Cloneable, Serializable {
 
     @Override
     public String toString() {
+        String str = "";
         StringBuilder builder1 = new StringBuilder();
         builder1.append("DSDNA\n");
         int[] index = computeBindingIndices(sense);
-        builder1.append("\tUpper bound-range 5'[" + index[0]
-                + "," + index[1] + "]3'\n");
+        str = String.format("\tUpper bound-range 5'[%d,%d]3'\n", index[0], index[1]);
+        builder1.append(str);
         index = computeBindingIndices(antiSense);
-        builder1.append("\tLower bound-range 5'[" + index[0]
-                + "," + index[1] + "]3'\n");
-        builder1.append(sense.toString());
-        builder1.append("\n3'[");
+        str = String.format("\tLower bound-range 5'[%d,%d]3'\n", index[0], index[1]);
+        builder1.append(str);
+        str = String.format("%s\n3'[", sense.toString());
+        builder1.append(str);
         StringBuilder builder2 = new StringBuilder();
         builder2.append(antiSense.asBindingSensitiveString());
         builder2.reverse();
