@@ -1,8 +1,8 @@
 package components;
 
-public class Thiamine extends Nucleotide {
+public class Thymine extends Nucleotide {
 
-    public Thiamine() {
+    public Thymine() {
         setBase('T');
         setBondStrength(2);
     }

@@ -24,7 +24,7 @@ public class SSDNASequence  implements Cloneable, Serializable, Iterable<Nucleot
                     bases[i] = new Guanine();
                     break;
                 case 'T':
-                    bases[i] = new Thiamine();
+                    bases[i] = new Thymine();
                     break;
                 case 'C':
                     bases[i] = new Cytosine();

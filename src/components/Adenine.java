@@ -9,7 +9,7 @@ public class Adenine extends Nucleotide {
 
     @Override
     public Nucleotide getComplement() {
-        return new Thiamine();
+        return new Thymine();
     }
 
 }
