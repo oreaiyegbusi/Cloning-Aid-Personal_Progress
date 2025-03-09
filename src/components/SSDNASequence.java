@@ -1,11 +1,12 @@
 package components;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-public class SSDNASequence  implements Cloneable, Iterable<Nucleotide>{
+public class SSDNASequence  implements Cloneable, Serializable, Iterable<Nucleotide>{
     /**
      * The SSDNASequence is listed in the forward direction 5'-3'
      */

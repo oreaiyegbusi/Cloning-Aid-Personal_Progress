@@ -1,6 +1,8 @@
 package components;
 
-public class DSDNASequence implements Cloneable {
+import java.io.Serializable;
+
+public class DSDNASequence implements Cloneable, Serializable {
     /**
      * The Donor and GOI are represented by this class
      * The Reverse primer attaches to the  Sense (Upper),
@@ -97,19 +99,6 @@ public class DSDNASequence implements Cloneable {
     }
 
 
-    private void attachPrimers(Primer forwardPrimer,
-                               Primer reversePrimer) {
-        isAnnealed = true;
-
-        // Bind the primers to the strands
-        for (Nucleotide n : forwardPrimer) {
-            n.setBound(true);
-        }
-        for (Nucleotide n : reversePrimer) {
-            n.setBound(true);
-        }
-    }
-
     private boolean isAnnealed() {
         return isAnnealed;
     }
@@ -154,7 +143,7 @@ public class DSDNASequence implements Cloneable {
                         + " to " + pn + " on fwd primer");
             }
         }
-        attachPrimers(forwardPrimer, reversePrimer);
+        isAnnealed = true;
     }
 
     /**

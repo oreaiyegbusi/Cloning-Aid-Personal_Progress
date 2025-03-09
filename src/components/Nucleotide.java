@@ -1,6 +1,8 @@
 package components;
 
-public abstract class Nucleotide implements Cloneable{
+import java.io.Serializable;
+
+public abstract class Nucleotide implements Cloneable, Serializable {
     private boolean bound = false;
     private char base = 0x0000;
     private int bondStrength = 0;

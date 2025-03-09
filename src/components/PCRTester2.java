@@ -1,6 +1,6 @@
 package components;
 
-public class PCRTester {
+public class PCRTester2 {
 
     /*
     Strand
@@ -23,7 +23,7 @@ public class PCRTester {
     CGAAGCCTGTAAAGCGGCGGTGCACAATCTTCTCGCGCAACGCGTCAGTGGGCTGATCATTAACTATCCGCT
     GGATGACCAGGATGCCATTGCTGTGGAAGCTGCCTGCACTAATGTTCCGGCGTTATTTCTTGATGTCTCTGA
     */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws CloningAidException {
         DSDNASequence goi = null, donor = null;
         SSDNASequence seqGoi = null, seqDonor = null;
         try {
@@ -63,68 +63,24 @@ public class PCRTester {
         goi = new DSDNASequence(seqGoi);
         donor = new DSDNASequence(seqDonor);
 
-        // Create the Primers
-        Primer fwdPrimer = goi.createForwardPrimer();
-        Primer revPrimer = goi.createReversePrimer();
+        // Create the Reaction
+        PolymeraseChainReactor pcr = new PolymeraseChainReactor(goi, donor);
 
         // Create and Denature the GOI
-        donor.denature();
-        System.out.println("DENATURED DONOR:\n" + donor);
+        System.out.println("DONOR:\n" + pcr.getDonor());
+        System.out.println("GOI:\n" + pcr.getGoi());
 
-
-        System.out.println("GOI:\n" + goi);
-
-        System.out.println("Fwd Primer:" + fwdPrimer);
-        System.out.println("Rev Primer:" + revPrimer);
-            // Run the polymerase chain reaction
-        DSDNASequence[] cycle1 = new DSDNASequence[2];
+        System.out.println("Fwd Primer:" + pcr.getForwardPrimer());
+        System.out.println("Rev Primer:" + pcr.getReversePrimer());
+        //Anneal the primers to the denatured donor
+        int n = 3;
+        pcr.run(n);
         int count = 0;
-        donor.denature();
-        try {
-            donor.annealPrimers(fwdPrimer, revPrimer);
-            DSDNASequence[] tmp = donor.runPolymerase();
-            cycle1[count++] = tmp[0];
-            cycle1[count] = tmp[1];
-        } catch (CloningAidException e) {
-            throw new RuntimeException(e);
+        DSDNASequence[] tmp = pcr.getLevel(3);
+       for (DSDNASequence dsdna : tmp) {
+           String str = String.format("L[%d][%d]:\n%s", n, count++, dsdna);
+            System.out.println(str);
         }
-
-        System.out.println("Child[L1][0]\n" + cycle1[0]);
-        System.out.println("Child[L1][1]\n" + cycle1[1]);
-
-        DSDNASequence[] cycle2 = new DSDNASequence[4];
-        count = 0;
-        for (int i = 0; i < cycle1.length; i++) {
-            cycle1[i].denature();
-            try {
-                cycle1[i].annealPrimers(fwdPrimer, revPrimer);
-                DSDNASequence[] tmp = cycle1[i].runPolymerase();
-                cycle2[count++] = tmp[0];
-                cycle2[count++] = tmp[1];
-            } catch (CloningAidException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        System.out.println("Child[L2][0]\n" + cycle2[0]);
-        System.out.println("Child[L2][1]\n" + cycle2[1]);
-        System.out.println("Child[L2][2]\n" + cycle2[2]);
-        System.out.println("Child[L2][3]\n" + cycle2[3]);
-
-        DSDNASequence[] cycle3 = new DSDNASequence[8];
-        count = 0;
-        for (int i = 0; i < cycle2.length; i++) {
-            cycle2[i].denature();
-            try {
-                cycle2[i].annealPrimers(fwdPrimer, revPrimer);
-                DSDNASequence[] tmp = cycle2[i].runPolymerase();
-                cycle3[count++] = tmp[0];
-                cycle3[count++] = tmp[1];
-            } catch (CloningAidException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        for (int i = 0; i < cycle3.length; i++) {
-            System.out.println("Child[L3][" + i + "]\n" + cycle3[i]);
-        }
+        pcr.commit("Somesuch.dat");
     }
 }
