@@ -166,7 +166,7 @@ public class DSDNASequence implements Cloneable, Serializable {
 
     @Override
     public String toString() {
-        String str = "";
+        String str;
         StringBuilder builder1 = new StringBuilder();
         builder1.append("DSDNA\n");
         int[] index = computeBindingIndices(sense);
