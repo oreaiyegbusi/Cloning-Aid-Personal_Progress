@@ -14,7 +14,6 @@ public class PolymeraseChainReactor implements Serializable {
     private final DSDNASequence donor;
     private final Primer forwardPrimer;
     private final Primer reversePrimer;
-    private int cycles = -1;
 
     @Serial
     private static final long serialVersionUID = 7L;
@@ -41,11 +40,10 @@ public class PolymeraseChainReactor implements Serializable {
 
     public void run(int iterations) {
         result = new DSDNASequence[INITIAL_CAPACITY];
-        this.cycles = iterations;
         Queue<DSDNASequence> inputs = new LinkedList<>();
         put(donor);
         inputs.add(donor);
-        int range = 1 + 2 * (int) (Math.pow(2, cycles) - 1.0);
+        int range = 1 + 2 * (int) (Math.pow(2, iterations) - 1.0);
         try {
             while (range > 0) {
                 range--;
