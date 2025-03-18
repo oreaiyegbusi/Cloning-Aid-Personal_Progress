@@ -4,8 +4,6 @@ import components.Controller;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class ControllerView extends JFrame {
 
@@ -34,12 +32,12 @@ public class ControllerView extends JFrame {
         JMenuBar menuBar = new JMenuBar();
 
         // create a menu
-        JMenu menu = new JMenu("Menu");
-        JMenu menu2 = new JMenu("Menu2");
+        JMenu menu = new JMenu("File");
+        JMenu menu2 = new JMenu("Recent Projects");
 
         // create menuitems
-        JMenuItem menuItem1 = new JMenuItem("Menu Item1");
-        JMenuItem menuItem2 = new JMenuItem("Menu Item2");
+        JMenuItem menuItem1 = new JMenuItem("Open...");
+        JMenuItem menuItem2 = new JMenuItem("Close Project");
         JMenuItem menuItem3 = new JMenuItem("Menu Item3");
         menuItem1.addActionListener(controller);
         menuItem2.addActionListener(controller);

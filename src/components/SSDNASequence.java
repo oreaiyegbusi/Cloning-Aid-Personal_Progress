@@ -29,6 +29,9 @@ public class SSDNASequence  implements Cloneable, Serializable, Iterable<Nucleot
                 case 'C':
                     bases[i] = new Cytosine();
                     break;
+                case 'X':
+                    bases[i] = new Empty();
+                    break;
                 default:
                     throw new CloningAidException("Illegal char in Nucleotide sequence!");
             }

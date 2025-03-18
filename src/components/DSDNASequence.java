@@ -30,6 +30,19 @@ public class DSDNASequence implements Cloneable, Serializable {
             n.setBound(true);
     }
 
+    public DSDNASequence(String rawDNA) throws CloningAidException {
+        if (rawDNA.length() < 20 || rawDNA.length() > 20000)
+            throw new IllegalArgumentException("Raw DNA sequence out " +
+                    "of limits [ 20 < length < 20000");
+        sense = new SSDNASequence(rawDNA);
+
+        antiSense = sense.getComplement().getReversed();
+        for (Nucleotide n : sense)
+            n.setBound(true);
+        for (Nucleotide n : antiSense)
+            n.setBound(true);
+    }
+
     public Primer createForwardPrimer() {
         return new Primer(sense);
     }
@@ -185,7 +198,7 @@ public class DSDNASequence implements Cloneable, Serializable {
         return builder1.toString();
     }
 
-    protected SSDNASequence getSense() {
+    public SSDNASequence getSense() {
         return sense;
     }
 
@@ -197,7 +210,7 @@ public class DSDNASequence implements Cloneable, Serializable {
         this.antiSense = sequence;
     }
 
-    protected SSDNASequence getAntiSense() {
+    public SSDNASequence getAntiSense() {
         return antiSense;
     }
 

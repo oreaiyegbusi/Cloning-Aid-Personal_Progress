@@ -6,20 +6,6 @@ import java.util.List;
 
 public class Polymerase {
 
-    public static void run(SSDNASequence sequence) {
-        // find the location where primer got bound
-        int index = 0;
-        for (int i = 0; i < sequence.getLength(); i++) {
-            if (sequence.getNucleotide(i).isBound()) {
-                index = i - 1;
-                break;
-            }
-        }
-        // Bind backwards
-        for (int i = index; i >= 0; i--)
-            sequence.getNucleotide(i).setBound(true);
-    }
-
     private static SSDNASequence createComplementOfBoundStrand(SSDNASequence sequence) {
         List<Nucleotide> list = new ArrayList<>();
         for (var n : sequence) {

@@ -41,7 +41,6 @@ public abstract class Nucleotide implements Cloneable, Serializable {
             return String.valueOf((char)(base+32));
     }
 
-
     @Override
     public boolean equals(Object obj) {
         if (obj.getClass() != this.getClass())
