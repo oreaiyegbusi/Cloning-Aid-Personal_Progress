@@ -13,7 +13,7 @@ public class SetupPanel extends JPanel {
     }
 
     private void addComponents(Controller controller) {
-        setPreferredSize(new Dimension(400, 300));
+        Font font = new Font("Courier New", Font.BOLD, 32);        setPreferredSize(new Dimension(400, 300));
         setBackground(Color.GRAY);
         setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
@@ -41,6 +41,29 @@ public class SetupPanel extends JPanel {
         constraints.weightx = 0.5;
         constraints.weighty = 0.5;
         add(goiButton, constraints);
+
+        constraints.gridx = 2;
+        constraints.gridy = 0;
+        constraints.weightx = 0.5;
+        constraints.weighty = 0.5;
+        add(new JLabel(), constraints);
+
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.weightx = 0.5;
+        constraints.weighty = 0.5;
+        runLabel.setForeground(Color.WHITE);
+        runLabel.setFont(font);
+        add(runLabel, constraints);
+
+        constraints.gridx = 1;
+        constraints.gridy = 1;
+        constraints.gridwidth = 2;
+        constraints.fill= GridBagConstraints.HORIZONTAL;
+        constraints.weightx = 1.0;
+        constraints.weighty = 0.5;
+        constraints.ipadx =5;
+        add(cyclesField, constraints);
     }
 
 
