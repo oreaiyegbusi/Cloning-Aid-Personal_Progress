@@ -12,7 +12,8 @@ public class ControllerView extends JFrame {
 
     private final Controller controller;
     private JScrollPane workspacePanel;
-    private JPanel setupPanel, analysisPanel;
+    private AnalysisPanel analysisPanel;
+    private SetupPanel setupPanel;
 
 
     public ControllerView(Controller controller) {
@@ -38,23 +39,8 @@ public class ControllerView extends JFrame {
         workspacePanel = new JScrollPane();
         workspacePanel.setPreferredSize(new Dimension(400, 600));
         workspacePanel.setBackground(Color.DARK_GRAY);
-        setupPanel = new JPanel();
-        setupPanel.setPreferredSize(new Dimension(400, 300));
-        setupPanel.setBackground(Color.GRAY);
 
-        //Titled borders
-        TitledBorder title;
-        //title = BorderFactory.createTitledBorder("Setup");
-        title = BorderFactory.createTitledBorder(BorderFactory.createBevelBorder(1), "Setup");
-        title.setTitleColor(Color.WHITE);
-        setupPanel.setBorder(title);
 
-        analysisPanel = new JPanel();
-        analysisPanel.setBackground(Color.LIGHT_GRAY);
-        analysisPanel.setPreferredSize(new Dimension(400, 300));
-        title = BorderFactory.createTitledBorder(BorderFactory.createBevelBorder(1), "Analysis");
-        title.setTitleColor(Color.BLACK);
-        analysisPanel.setBorder(title);
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.BOTH;
@@ -71,6 +57,7 @@ public class ControllerView extends JFrame {
         constraints.gridx = 1;
         constraints.gridy = 0;
         constraints.gridheight = 1;
+        setupPanel = new SetupPanel(controller);
         container.add(setupPanel, constraints);
 
         constraints.fill = GridBagConstraints.BOTH;
@@ -78,6 +65,7 @@ public class ControllerView extends JFrame {
         constraints.weighty = 0.5;
         constraints.gridx = 1;
         constraints.gridy = 1;
+        analysisPanel = new AnalysisPanel(controller);
         container.add(analysisPanel, constraints);
 
     }
