@@ -5,7 +5,9 @@ import views.ControllerView;
 import javax.swing.*;
 import java.awt.event.*;
 
-public class Controller extends MouseAdapter implements ActionListener, ItemListener {
+public class Controller extends MouseAdapter implements ActionListener,
+        ItemListener,
+        WindowListener {
     private ControllerView view;
 
     public Controller() {
@@ -44,5 +46,40 @@ public class Controller extends MouseAdapter implements ActionListener, ItemList
         SwingUtilities.invokeLater(Controller::new);
     }
 
+    @Override
+    public void windowOpened(WindowEvent e) {
+        System.out.println("Window opened!");
+    }
 
+    @Override
+    public void windowClosing(WindowEvent e) {
+        System.out.println("Window closing!");
+
+    }
+
+    @Override
+    public void windowClosed(WindowEvent e) {
+        System.out.println("Window closed!");
+
+    }
+
+    @Override
+    public void windowIconified(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowDeiconified(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowActivated(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowDeactivated(WindowEvent e) {
+
+    }
 }

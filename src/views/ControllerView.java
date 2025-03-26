@@ -3,30 +3,85 @@ package views;
 import components.Controller;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 public class ControllerView extends JFrame {
 
     private final Controller controller;
+    private JScrollPane workspacePanel;
+    private JPanel setupPanel, analysisPanel;
+
 
     public ControllerView(Controller controller) {
         this.controller = controller;
+        addWindowListener(controller);
         createWindow();
         addComponents();
         setVisible(true);
+        pack();
     }
 
     private void createWindow() {
         setTitle("Cloning Aid");
-        setSize(new Dimension(800,600));
+        //setSize(new Dimension(800,600));
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     private void addComponents() {
-        //TODO
+        Container container = getContentPane();
         createMenu();
+        setLayout(new GridBagLayout());
+        workspacePanel = new JScrollPane();
+        workspacePanel.setPreferredSize(new Dimension(400, 600));
+        workspacePanel.setBackground(Color.DARK_GRAY);
+        setupPanel = new JPanel();
+        setupPanel.setPreferredSize(new Dimension(400, 300));
+        setupPanel.setBackground(Color.GRAY);
+
+        //Titled borders
+        TitledBorder title;
+        //title = BorderFactory.createTitledBorder("Setup");
+        title = BorderFactory.createTitledBorder(BorderFactory.createBevelBorder(1), "Setup");
+        title.setTitleColor(Color.WHITE);
+        setupPanel.setBorder(title);
+
+        analysisPanel = new JPanel();
+        analysisPanel.setBackground(Color.LIGHT_GRAY);
+        analysisPanel.setPreferredSize(new Dimension(400, 300));
+        title = BorderFactory.createTitledBorder(BorderFactory.createBevelBorder(1), "Analysis");
+        title.setTitleColor(Color.BLACK);
+        analysisPanel.setBorder(title);
+
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.weightx = 0.5;
+        constraints.weighty = 0.5;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.gridheight = 2;
+        container.add(workspacePanel, constraints);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.weightx = 0.5;
+        constraints.weighty = 0.5;
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+        constraints.gridheight = 1;
+        container.add(setupPanel, constraints);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.weightx = 0.5;
+        constraints.weighty = 0.5;
+        constraints.gridx = 1;
+        constraints.gridy = 1;
+        container.add(analysisPanel, constraints);
+
     }
+
 
     private void createMenu() {
         JMenuBar menuBar = new JMenuBar();
