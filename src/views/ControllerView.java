@@ -5,6 +5,7 @@ import components.Controller;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -21,14 +22,23 @@ public class ControllerView extends JFrame {
         addWindowListener(controller);
         createWindow();
         addComponents();
+        //setLocationRelativeTo(null);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowOpened(WindowEvent e) {
+                super.windowOpened(e);
+                Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+                int width = e.getWindow().getWidth();
+                int height = e.getWindow().getHeight();
+                setLocation((dim.width - width)/2, (dim.height - height)/2);
+            }
+        });
         setVisible(true);
         pack();
     }
 
     private void createWindow() {
         setTitle("Cloning Aid");
-        //setSize(new Dimension(800,600));
-        setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
@@ -37,10 +47,8 @@ public class ControllerView extends JFrame {
         createMenu();
         setLayout(new GridBagLayout());
         workspacePanel = new JScrollPane();
-        workspacePanel.setPreferredSize(new Dimension(400, 600));
+        workspacePanel.setPreferredSize(new Dimension(800, 600));
         workspacePanel.setBackground(Color.DARK_GRAY);
-
-
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.BOTH;
@@ -67,7 +75,6 @@ public class ControllerView extends JFrame {
         constraints.gridy = 1;
         analysisPanel = new AnalysisPanel(controller);
         container.add(analysisPanel, constraints);
-
     }
 
 

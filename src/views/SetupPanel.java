@@ -5,18 +5,27 @@ import components.Controller;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.util.Arrays;
 
 public class SetupPanel extends JPanel {
+
+    private final int MAX = 20, MIN = 0;
 
     public SetupPanel(Controller controller) {
         addComponents(controller);
     }
 
     private void addComponents(Controller controller) {
-        Font font = new Font("Courier New", Font.BOLD, 32);        setPreferredSize(new Dimension(400, 300));
+        int horizontalGap = 30;
+        Font font = new Font("Courier New", Font.BOLD, 24);
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        setPreferredSize(new Dimension(dim.width/3, dim.height/3));
         setBackground(Color.GRAY);
         setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
+        char[] arr = new char[horizontalGap];
+        Arrays.fill(arr, ' ');
+        String gap = new String(arr);
 
         //Titled borders
         TitledBorder title;
@@ -24,15 +33,18 @@ public class SetupPanel extends JPanel {
         title = BorderFactory.createTitledBorder(BorderFactory.createBevelBorder(1), "Setup");
         title.setTitleColor(Color.WHITE);
         setBorder(title);
-        JButton donorButton = new JButton("Donor");
-        JButton goiButton = new JButton("GOI");
-        JButton runPCR = new JButton("Run");
-        JLabel runLabel = new JLabel("Cycles:");
-        JTextField cyclesField = new JTextField("3");
 
+        JButton donorButton = new JButton("Define Donor");
+        JButton goiButton = new JButton("Define GOI");
+        JButton runPCR = new JButton("Run");
+
+        JLabel cyclesLabel = new JLabel(" Cycles:");
+        SpinnerModel cyclesModel = new SpinnerNumberModel(3,
+                MIN, MAX, 1);
+        JSpinner cyclesField = new JSpinner(cyclesModel);
         constraints.gridx = 0;
         constraints.gridy = 0;
-        constraints.weightx = 0.5;
+        constraints.weightx = 0.2;
         constraints.weighty = 0.5;
         add(donorButton, constraints);
 
@@ -46,24 +58,36 @@ public class SetupPanel extends JPanel {
         constraints.gridy = 0;
         constraints.weightx = 0.5;
         constraints.weighty = 0.5;
-        add(new JLabel(), constraints);
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        add(new JLabel(gap), constraints);
 
         constraints.gridx = 0;
         constraints.gridy = 1;
         constraints.weightx = 0.5;
         constraints.weighty = 0.5;
-        runLabel.setForeground(Color.WHITE);
-        runLabel.setFont(font);
-        add(runLabel, constraints);
+        cyclesLabel.setForeground(Color.WHITE);
+        cyclesLabel.setFont(font);
+        add(cyclesLabel, constraints);
 
         constraints.gridx = 1;
         constraints.gridy = 1;
-        constraints.gridwidth = 2;
-        constraints.fill= GridBagConstraints.HORIZONTAL;
-        constraints.weightx = 1.0;
+        constraints.weightx = 0.5;
         constraints.weighty = 0.5;
         constraints.ipadx =5;
         add(cyclesField, constraints);
+
+        constraints.gridx = 2;
+        constraints.gridy = 1;
+        constraints.weightx = 0.5;
+        constraints.weighty = 0.5;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        add(new JLabel(gap), constraints);
+
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        constraints.weightx = 0.5;
+        constraints.weighty = 0.5;
+        add(runPCR, constraints);
     }
 
 
