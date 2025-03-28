@@ -1,6 +1,7 @@
 package components;
 
 import views.ControllerView;
+import views.InputPanel;
 import views.SetupPanel;
 
 import javax.swing.*;
