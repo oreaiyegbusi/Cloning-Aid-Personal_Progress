@@ -10,6 +10,8 @@ import java.util.Arrays;
 public class SetupPanel extends JPanel {
 
     private final int MAX = 20, MIN = 0;
+    public static final String AC_DONOR_ENTRY = "donor_entry";
+    public static final String AC_GOI_ENTRY = "goi_entry";
 
     public SetupPanel(Controller controller) {
         addComponents(controller);
@@ -23,9 +25,6 @@ public class SetupPanel extends JPanel {
         setBackground(Color.GRAY);
         setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
-        char[] arr = new char[horizontalGap];
-        Arrays.fill(arr, ' ');
-        String gap = new String(arr);
 
         //Titled borders
         TitledBorder title;
@@ -35,7 +34,11 @@ public class SetupPanel extends JPanel {
         setBorder(title);
 
         JButton donorButton = new JButton("Define Donor");
+        donorButton.setActionCommand(AC_DONOR_ENTRY);
+        donorButton.addActionListener(controller);
         JButton goiButton = new JButton("Define GOI");
+        goiButton.setActionCommand(AC_GOI_ENTRY);
+        goiButton.addActionListener(controller);
         JButton runPCR = new JButton("Run");
 
         JLabel cyclesLabel = new JLabel(" Cycles:");
@@ -59,7 +62,7 @@ public class SetupPanel extends JPanel {
         constraints.weightx = 0.5;
         constraints.weighty = 0.5;
         constraints.fill = GridBagConstraints.HORIZONTAL;
-        add(new JLabel(gap), constraints);
+        add(new JLabel(getPadding(horizontalGap)), constraints);
 
         constraints.gridx = 0;
         constraints.gridy = 1;
@@ -81,7 +84,7 @@ public class SetupPanel extends JPanel {
         constraints.weightx = 0.5;
         constraints.weighty = 0.5;
         constraints.fill = GridBagConstraints.HORIZONTAL;
-        add(new JLabel(gap), constraints);
+        add(new JLabel(getPadding(horizontalGap)), constraints);
 
         constraints.gridx = 0;
         constraints.gridy = 2;
@@ -90,5 +93,10 @@ public class SetupPanel extends JPanel {
         add(runPCR, constraints);
     }
 
+    private String getPadding(int gap) {
+        char[] arr = new char[gap];
+        Arrays.fill(arr, ' ');
+        return new String(arr);
+    }
 
 }

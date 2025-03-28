@@ -1,40 +1,55 @@
 package views;
 
 import components.Controller;
+import components.DSDNASequence;
+import components.Primer;
+import components.SSDNASequence;
 
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 
 public class ControllerView extends JFrame {
 
     private final Controller controller;
-    private JScrollPane workspacePanel;
+    private WorkspacePanel workspacePanel;
     private AnalysisPanel analysisPanel;
     private SetupPanel setupPanel;
+
+    public static final String AC_OPEN = "open";
+    public static final String AC_INPUT = "input";
+    public static final String AC_GOI_ENTRY = "goi_entry";
+    public static final String AC_DONOR_ENTRY = "donor_entry";
+    public static final String AC_RUN_PCR = "donor_entry";
+
+    public static final String AC_MENU_OPEN = "menu_open";
+    public static final String AC_MENU_TEST = "menu_test";
 
 
     public ControllerView(Controller controller) {
         this.controller = controller;
         addWindowListener(controller);
+        setMinimumSize(new Dimension(800, 600));
         createWindow();
         addComponents();
-        //setLocationRelativeTo(null);
+
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowOpened(WindowEvent e) {
                 super.windowOpened(e);
-                Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-                int width = e.getWindow().getWidth();
-                int height = e.getWindow().getHeight();
-                setLocation((dim.width - width)/2, (dim.height - height)/2);
+                centralizeScreen(e);
             }
         });
         setVisible(true);
         pack();
+    }
+
+    private void centralizeScreen(WindowEvent e) {
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        int width = e.getWindow().getWidth();
+        int height = e.getWindow().getHeight();
+        setLocation((dim.width - width) / 2, (dim.height - height) / 2);
     }
 
     private void createWindow() {
@@ -42,43 +57,60 @@ public class ControllerView extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
-    private void addComponents() {
-        Container container = getContentPane();
-        createMenu();
-        setLayout(new GridBagLayout());
-        workspacePanel = new JScrollPane();
-        workspacePanel.setPreferredSize(new Dimension(800, 600));
-        workspacePanel.setBackground(Color.DARK_GRAY);
-
-        GridBagConstraints constraints = new GridBagConstraints();
+    private void createWorkspacePanel(GridBagConstraints constraints,
+                                      Container container) {
         constraints.fill = GridBagConstraints.BOTH;
         constraints.weightx = 0.5;
         constraints.weighty = 0.5;
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.gridheight = 2;
-        container.add(workspacePanel, constraints);
+        workspacePanel = new WorkspacePanel(controller);
+        // Create a JViewport
+        JScrollPane viewport = new JScrollPane(workspacePanel);
+        viewport.setOpaque(false);
+        viewport.setPreferredSize(new Dimension(800, 600));
+        //viewport.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        add(viewport, constraints);
+    }
 
+    private void createSetupPanel(GridBagConstraints constraints,
+                                  Container container) {
         constraints.fill = GridBagConstraints.BOTH;
         constraints.weightx = 0.5;
         constraints.weighty = 0.5;
         constraints.gridx = 1;
         constraints.gridy = 0;
         constraints.gridheight = 1;
-        setupPanel = new SetupPanel(controller);
         container.add(setupPanel, constraints);
+    }
 
+    private void createAnalysisPanel(GridBagConstraints constraints,
+                                     Container container) {
         constraints.fill = GridBagConstraints.BOTH;
         constraints.weightx = 0.5;
         constraints.weighty = 0.5;
         constraints.gridx = 1;
         constraints.gridy = 1;
-        analysisPanel = new AnalysisPanel(controller);
         container.add(analysisPanel, constraints);
     }
 
+    private void addComponents() {
+        createMenu();
+        Container container = getContentPane();
+        GridBagConstraints constraints = new GridBagConstraints();
+        setLayout(new GridBagLayout());
+
+        workspacePanel = new WorkspacePanel(controller);
+        createWorkspacePanel(constraints, container);
+        setupPanel = new SetupPanel(controller);
+        createSetupPanel(constraints, container);
+        analysisPanel = new AnalysisPanel(controller);
+        createAnalysisPanel(constraints, container);
+    }
 
     private void createMenu() {
+
         JMenuBar menuBar = new JMenuBar();
 
         // create a menu
@@ -87,8 +119,12 @@ public class ControllerView extends JFrame {
 
         // create menuitems
         JMenuItem menuItem1 = new JMenuItem("Open...");
+        menuItem1.setActionCommand(AC_MENU_OPEN);
+
         JMenuItem menuItem2 = new JMenuItem("Close Project");
-        JMenuItem menuItem3 = new JMenuItem("Menu Item3");
+        JMenuItem menuItem3 = new JMenuItem("Test View");
+        menuItem3.setActionCommand(AC_MENU_TEST);
+
         menuItem1.addActionListener(controller);
         menuItem2.addActionListener(controller);
         menuItem3.addActionListener(controller);
@@ -114,4 +150,19 @@ public class ControllerView extends JFrame {
         setJMenuBar(menuBar);
     }
 
+    public void renderSSDNA(SSDNASequence sequence, int x, int y, int w, int h) {
+        workspacePanel.renderSSDNA(sequence, x, y, w, h);
+    }
+
+    public void renderPrimer(Primer sequence, int x, int y, int w, int h) {
+        workspacePanel.renderPrimer(sequence, x, y, w, h);
+    }
+
+    public void renderDSDNA(DSDNASequence sequence, int x, int y, int w, int h) {
+        workspacePanel.renderDSDNA(sequence, x, y, w, h);
+    }
+
+    public void renderText(String text, int x, int y, int size) {
+        workspacePanel.renderText(text, x, y, size);
+    }
 }
