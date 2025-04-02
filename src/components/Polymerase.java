@@ -90,11 +90,4 @@ public class Polymerase {
         sequence.setAnnealed(false);
         return children;
     }
-    public static DSDNASequence extendSense2(SSDNASequence sense) {
-        return null;
-    }
-
-    public static DSDNASequence extendAntiSense2(SSDNASequence antiSense) {
-        return null;
-    }
 }
