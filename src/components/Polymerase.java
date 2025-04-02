@@ -50,7 +50,7 @@ public class Polymerase {
         return -1;
     }
 
-    public static DSDNASequence extendSense(SSDNASequence sense)
+    private static DSDNASequence extendSense(SSDNASequence sense)
             throws CloningAidException {
         sense = crop(sense);
         sense.bindFrom(getPrimerLocation(sense));
@@ -61,7 +61,7 @@ public class Polymerase {
         return dsdna;
     }
 
-    public static DSDNASequence extendAntiSense(SSDNASequence antiSense)
+    private static DSDNASequence extendAntiSense(SSDNASequence antiSense)
             throws CloningAidException {
         antiSense = crop(antiSense);
         antiSense.bindFrom(getPrimerLocation(antiSense));
@@ -70,5 +70,31 @@ public class Polymerase {
         dsdna.setSense(sense);
         dsdna.setAntiSense(antiSense);
         return dsdna;
+    }
+
+    /**
+     * The DSDNA has to be annealed with primers before this call is made.
+     * @return The children after polymerase runs through
+     * @throws CloningAidException If primers are not annealed
+     */
+
+    public static DSDNASequence[] catalyze(DSDNASequence sequence)
+        throws CloningAidException {
+        if (!sequence.isAnnealed()) {
+            throw new CloningAidException("Primers are not annealed!");
+        }
+        DSDNASequence[] children = new DSDNASequence[2];
+        // Extend the existing strands.
+        children[0] = Polymerase.extendSense(sequence.getSense());
+        children[1] = Polymerase.extendAntiSense(sequence.getAntiSense());
+        sequence.setAnnealed(false);
+        return children;
+    }
+    public static DSDNASequence extendSense2(SSDNASequence sense) {
+        return null;
+    }
+
+    public static DSDNASequence extendAntiSense2(SSDNASequence antiSense) {
+        return null;
     }
 }

@@ -52,7 +52,7 @@ public class PolymeraseChainReactor implements Serializable {
                 dsDNA.denature();
                 //Anneal the primers to the denatured donor
                 dsDNA.annealPrimers(forwardPrimer, reversePrimer);
-                DSDNASequence[] tmp = dsDNA.runPolymerase();
+                DSDNASequence[] tmp = Polymerase.catalyze(dsDNA);
                 for (DSDNASequence d : tmp) {
                     put(d);
                     inputs.add(d);

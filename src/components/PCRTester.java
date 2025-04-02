@@ -82,7 +82,7 @@ public class PCRTester {
         donor.denature();
         try {
             donor.annealPrimers(fwdPrimer, revPrimer);
-            DSDNASequence[] tmp = donor.runPolymerase();
+            DSDNASequence[] tmp = Polymerase.catalyze(donor);
             cycle1[count++] = tmp[0];
             cycle1[count] = tmp[1];
         } catch (CloningAidException e) {
@@ -98,7 +98,7 @@ public class PCRTester {
             cycle1[i].denature();
             try {
                 cycle1[i].annealPrimers(fwdPrimer, revPrimer);
-                DSDNASequence[] tmp = cycle1[i].runPolymerase();
+                DSDNASequence[] tmp = Polymerase.catalyze(cycle1[i]);
                 cycle2[count++] = tmp[0];
                 cycle2[count++] = tmp[1];
             } catch (CloningAidException e) {
@@ -116,7 +116,7 @@ public class PCRTester {
             cycle2[i].denature();
             try {
                 cycle2[i].annealPrimers(fwdPrimer, revPrimer);
-                DSDNASequence[] tmp = cycle2[i].runPolymerase();
+                DSDNASequence[] tmp = Polymerase.catalyze(cycle2[i]);
                 cycle3[count++] = tmp[0];
                 cycle3[count++] = tmp[1];
             } catch (CloningAidException e) {

@@ -10,7 +10,10 @@ public class DSDNASequence implements Cloneable, Serializable {
      * strand.
      */
     private SSDNASequence antiSense, sense;
+
+
     private boolean isAnnealed = false;
+
 
     DSDNASequence() {
         sense = antiSense = null;
@@ -116,10 +119,13 @@ public class DSDNASequence implements Cloneable, Serializable {
     }
 
 
-    private boolean isAnnealed() {
+    boolean isAnnealed() {
         return isAnnealed;
     }
 
+    void setAnnealed(boolean annealed) {
+        isAnnealed = annealed;
+    }
 
     /**
      * The forward primer binds to the antisense strand of the DNA
@@ -163,22 +169,7 @@ public class DSDNASequence implements Cloneable, Serializable {
         isAnnealed = true;
     }
 
-    /**
-     * The DSDNA has to be annealed with primers before this call is made.
-     * @return The children after polymerase runs through
-     * @throws CloningAidException If primers are not annealed
-     */
-    public DSDNASequence[] runPolymerase() throws CloningAidException {
-        if (!isAnnealed()) {
-            throw new CloningAidException("Primers are not annealed!");
-        }
-        DSDNASequence[] children = new DSDNASequence[2];
-        // Extend the existing strands.
-        children[0] = Polymerase.extendSense(sense);
-        children[1] = Polymerase.extendAntiSense(antiSense);
-        isAnnealed = false;
-        return children;
-    }
+
 
     @Override
     public String toString() {

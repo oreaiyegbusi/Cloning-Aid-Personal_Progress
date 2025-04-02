@@ -57,12 +57,12 @@ public abstract class NucleotideView {
     }
 
     public static NucleotideView getInstance(Nucleotide nucleotide) {
-        return switch (nucleotide) {
-            case Adenine adenine -> new AdenineView(nucleotide);
-            case Guanine guanine -> new GuanineView(nucleotide);
-            case Thymine thymine -> new ThymineView(nucleotide);
-            case Cytosine cytosine -> new CytosineView(nucleotide);
-            case null, default -> new EmptyView(nucleotide);
+        return switch (nucleotide.getBase()) {
+            case 'A'  -> new AdenineView(nucleotide);
+            case 'G'  -> new GuanineView(nucleotide);
+            case 'T'  -> new ThymineView(nucleotide);
+            case 'C'  -> new CytosineView(nucleotide);
+            default -> new EmptyView(nucleotide);
         };
     }
 
