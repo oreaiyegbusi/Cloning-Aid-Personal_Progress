@@ -91,7 +91,7 @@ public class Controller extends MouseAdapter implements ActionListener,
             PolymeraseChainReactor pcr = new PolymeraseChainReactor(goi, donor);
             pcr.run(4);
             Primer prm = pcr.getForwardPrimer();
-            DSDNASequence[] result = pcr.getLevel(3);
+            DSDNASequence[] result = pcr.getLevel(4);
             int offset = 50;
             view.renderText("Primer", 100, 40, 12);
             view.renderPrimer(prm, 100, offset, 200, 25);

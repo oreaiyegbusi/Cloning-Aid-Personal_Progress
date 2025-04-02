@@ -11,6 +11,10 @@ public class DSDNASequence implements Cloneable, Serializable {
      */
     private SSDNASequence antiSense, sense;
     private boolean isAnnealed = false;
+
+    DSDNASequence() {
+        sense = antiSense = null;
+    }
     /**
      * The forward primer attaches to the start codon of the
      * template DNA (the anti-sense strand).
@@ -161,7 +165,6 @@ public class DSDNASequence implements Cloneable, Serializable {
 
     /**
      * The DSDNA has to be annealed with primers before this call is made.
-     *
      * @return The children after polymerase runs through
      * @throws CloningAidException If primers are not annealed
      */
@@ -169,10 +172,10 @@ public class DSDNASequence implements Cloneable, Serializable {
         if (!isAnnealed()) {
             throw new CloningAidException("Primers are not annealed!");
         }
-        DSDNASequence[] children = new DSDNASequence[]{this.clone(), this.clone()};
+        DSDNASequence[] children = new DSDNASequence[2];
         // Extend the existing strands.
-        Polymerase.extendSense(children[0]);
-        Polymerase.extendAntiSense(children[1]);
+        children[0] = Polymerase.extendSense(sense);
+        children[1] = Polymerase.extendAntiSense(antiSense);
         isAnnealed = false;
         return children;
     }

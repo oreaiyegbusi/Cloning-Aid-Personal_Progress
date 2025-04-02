@@ -50,29 +50,25 @@ public class Polymerase {
         return -1;
     }
 
-    public static void extendSense(DSDNASequence dsDNA)
+    public static DSDNASequence extendSense(SSDNASequence sense)
             throws CloningAidException {
-        if (dsDNA == null)
-            throw new CloningAidException("Could not extend using Sense strand in DNA");
-        SSDNASequence seq1 = dsDNA.getSense();
-        seq1 = crop(seq1);
-        dsDNA.setSense(seq1);
-        seq1.bindFrom(getPrimerLocation(seq1));
-
-        SSDNASequence seq2 = createComplementOfBoundStrand(seq1);
-        dsDNA.setAntiSense(seq2);
+        sense = crop(sense);
+        sense.bindFrom(getPrimerLocation(sense));
+        SSDNASequence antisense = createComplementOfBoundStrand(sense);
+        DSDNASequence dsdna = new DSDNASequence();
+        dsdna.setSense(sense);
+        dsdna.setAntiSense(antisense);
+        return dsdna;
     }
 
-    public static void extendAntiSense(DSDNASequence dsDNA)
+    public static DSDNASequence extendAntiSense(SSDNASequence antiSense)
             throws CloningAidException {
-        if (dsDNA == null)
-            throw new CloningAidException("Could not extend using AntiSense strand in DNA");
-        SSDNASequence seq1 = dsDNA.getAntiSense();
-        seq1 = crop(seq1);
-        dsDNA.setAntiSense(seq1);
-        seq1.bindFrom(getPrimerLocation(seq1));
-
-        SSDNASequence seq2 = createComplementOfBoundStrand(seq1);
-        dsDNA.setSense(seq2);
+        antiSense = crop(antiSense);
+        antiSense.bindFrom(getPrimerLocation(antiSense));
+        SSDNASequence sense = createComplementOfBoundStrand(antiSense);
+        DSDNASequence dsdna = new DSDNASequence();
+        dsdna.setSense(sense);
+        dsdna.setAntiSense(antiSense);
+        return dsdna;
     }
 }
