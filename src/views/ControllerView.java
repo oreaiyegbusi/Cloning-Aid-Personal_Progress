@@ -54,6 +54,12 @@ public class ControllerView extends JFrame {
 
     private void createWindow() {
         setTitle("Cloning Aid");
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
+                 UnsupportedLookAndFeelException e) {
+            throw new RuntimeException(e);
+        }
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
