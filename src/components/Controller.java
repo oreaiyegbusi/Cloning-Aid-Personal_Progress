@@ -39,10 +39,10 @@ public class Controller extends MouseAdapter implements ActionListener,
                             chooser.getSelectedFile().getName());
                 }
                 break;
-            case SetupPanel.AC_DONOR_ENTRY:
+            case ControllerView.AC_DONOR_ENTRY:
                 new InputPanel(this, view);
                 break;
-            case SetupPanel.AC_GOI_ENTRY:
+            case ControllerView.AC_GOI_ENTRY:
                 break;
             default:
         }

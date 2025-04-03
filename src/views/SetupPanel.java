@@ -10,8 +10,6 @@ import java.util.Arrays;
 public class SetupPanel extends JPanel {
 
     private final int MAX = 20, MIN = 0;
-    public static final String AC_DONOR_ENTRY = "donor_entry";
-    public static final String AC_GOI_ENTRY = "goi_entry";
 
     public SetupPanel(Controller controller) {
         addComponents(controller);
@@ -34,10 +32,10 @@ public class SetupPanel extends JPanel {
         setBorder(title);
 
         JButton donorButton = new JButton("Define Donor");
-        donorButton.setActionCommand(AC_DONOR_ENTRY);
+        donorButton.setActionCommand(ControllerView.AC_DONOR_ENTRY);
         donorButton.addActionListener(controller);
         JButton goiButton = new JButton("Define GOI");
-        goiButton.setActionCommand(AC_GOI_ENTRY);
+        goiButton.setActionCommand(ControllerView.AC_GOI_ENTRY);
         goiButton.addActionListener(controller);
         JButton runPCR = new JButton("Run");
 
