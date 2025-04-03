@@ -28,7 +28,7 @@ public class InputPanel extends JDialog {
             if (controller == null)
                 System.out.println(input);
             else
-                controller.actionPerformed(new ActionEvent(this, 0, input));
+                controller.actionPerformed(new ActionEvent(e.getSource(), 0, input));
         }));
         buttonPanel.add(new JButton("Clear"));
         add(buttonPanel, BorderLayout.SOUTH);
