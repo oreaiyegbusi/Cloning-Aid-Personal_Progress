@@ -115,6 +115,16 @@ public class PolymeraseChainReactor implements Serializable {
         return pcr;
     }
 
+    public double getPotentialYield(double pcrVolume, double primerConcentration) {
+        double length =  goi.getSense().getLength();
+        return primerConcentration * pcrVolume * length * 660.0;
+    }
+
+    public double getRequiredPrimerConcentration(double pcrVolume, double desiredYield) {
+        double length =  goi.getSense().getLength();
+            return desiredYield / (pcrVolume * 660.0 * length);
+    }
+
     public int getLevels() {
         return (int)(Math.log10(size)/Math.log10(2.0));
     }
