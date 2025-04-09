@@ -1,4 +1,4 @@
-package views;
+package components;
 
 import java.awt.event.ActionEvent;
 
