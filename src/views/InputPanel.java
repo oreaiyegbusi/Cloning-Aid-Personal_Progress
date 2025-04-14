@@ -1,5 +1,6 @@
 package views;
 
+import components.CloningAidActionEvent;
 import components.Controller;
 
 import javax.swing.*;
@@ -10,25 +11,32 @@ public class InputPanel extends JDialog {
 
     private JEditorPane editorPane;
 
-    public InputPanel(Controller controller, ControllerView view) {
-        createWindow(controller);
+    public InputPanel(Controller controller, ControllerView view,
+                      String type) {
+        createWindow(controller, type);
         setLocationRelativeTo(view);
         setVisible(true);
     }
 
-    private void createWindow(Controller controller) {
+    private void createWindow(Controller controller, String type) {
         JScrollPane editorScrollPane = getjScrollPane();
         add(editorScrollPane, BorderLayout.CENTER);
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout());
         JButton enterButton = new JButton("Enter");
+        enterButton.setActionCommand(ControllerView.AC_DONOR_DEF);
         buttonPanel.add(enterButton);
         enterButton.addActionListener((e -> {
             String input = editorPane.getText();
             if (controller == null)
                 System.out.println(input);
-            else
-                controller.actionPerformed(new ActionEvent(e.getSource(), 0, input));
+            else {
+                if (type.equalsIgnoreCase("donor"))
+                    controller.actionPerformed(new CloningAidActionEvent(e.getSource(), e.getID(), ControllerView.AC_DONOR_DEF, input));
+                else if (type.equalsIgnoreCase("goi"))
+                    controller.actionPerformed(new CloningAidActionEvent(e.getSource(), e.getID(), ControllerView.AC_GOI_DEF, input));
+            }
+            dispose();
         }));
         buttonPanel.add(new JButton("Clear"));
         add(buttonPanel, BorderLayout.SOUTH);

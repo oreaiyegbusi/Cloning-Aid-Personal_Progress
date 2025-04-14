@@ -18,7 +18,8 @@ public class ControllerView extends JFrame {
     private SetupPanel setupPanel;
 
     public static final String AC_OPEN = "open";
-    public static final String AC_INPUT = "input";
+    public static final String AC_DONOR_DEF = "donor_input";
+    public static final String AC_GOI_DEF = "goi_input";
     public static final String AC_GOI_ENTRY = "goi_entry";
     public static final String AC_DONOR_ENTRY = "donor_entry";
     public static final String AC_RUN_PCR = "donor_entry";
@@ -171,4 +172,5 @@ public class ControllerView extends JFrame {
     public void renderText(String text, int x, int y, int size) {
         workspacePanel.renderText(text, x, y, size);
     }
+
 }

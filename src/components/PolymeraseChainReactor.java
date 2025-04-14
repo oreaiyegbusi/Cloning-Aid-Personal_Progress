@@ -82,10 +82,10 @@ public class PolymeraseChainReactor implements Serializable {
     }
 
     public DSDNASequence[] getLevel(int level) throws CloningAidException {
-       int l = getLevels();
+        int l = getLevels();
         if (level > l)
-           throw new CloningAidException("Maximum level " +
-                   "available is " + l + ". Asking " + level + "!");
+            throw new CloningAidException("Maximum level " +
+                    "available is " + l + ". Asking " + level + "!");
         int index = (int) (1 + 2 * (Math.pow(2, level - 1) - 1));
         int range = (int) (Math.pow(2, level)) - 1;
 
@@ -122,7 +122,7 @@ public class PolymeraseChainReactor implements Serializable {
 
     public double getRequiredPrimerConcentration(double pcrVolume, double desiredYield) {
         double length =  goi.getSense().getLength();
-            return desiredYield / (pcrVolume * 660.0 * length);
+        return desiredYield / (pcrVolume * 660.0 * length);
     }
 
     public int getLevels() {
