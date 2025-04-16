@@ -38,7 +38,10 @@ public class InputPanel extends JDialog {
             }
             dispose();
         }));
-        buttonPanel.add(new JButton("Clear"));
+        JButton clearButton = new JButton("Clear");
+        clearButton.addActionListener(e -> editorPane.setText(""));
+        buttonPanel.add(clearButton);
+      //  buttonPanel.add(new JButton("Clear"));
         add(buttonPanel, BorderLayout.SOUTH);
         setSize(new Dimension(800,600));
     }

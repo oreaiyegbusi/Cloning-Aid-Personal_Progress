@@ -1,5 +1,6 @@
 package views;
 
+import components.CloningAidActionEvent;
 import components.Controller;
 
 import javax.swing.*;
@@ -19,7 +20,7 @@ public class SetupPanel extends JPanel {
         int horizontalGap = 30;
         Font font = new Font("Courier New", Font.BOLD, 24);
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-        setPreferredSize(new Dimension(dim.width/3, dim.height/3));
+        setPreferredSize(new Dimension(dim.width / 3, dim.height / 3));
         setBackground(Color.GRAY);
         setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
@@ -31,18 +32,31 @@ public class SetupPanel extends JPanel {
         title.setTitleColor(Color.WHITE);
         setBorder(title);
 
+
+//Define Buttons
         JButton donorButton = new JButton("Define Donor");
         donorButton.setActionCommand(ControllerView.AC_DONOR_ENTRY);
         donorButton.addActionListener(controller);
+
         JButton goiButton = new JButton("Define GOI");
         goiButton.setActionCommand(ControllerView.AC_GOI_ENTRY);
         goiButton.addActionListener(controller);
+
         JButton runPCR = new JButton("Run");
 
+//Define Cycle Spinner
         JLabel cyclesLabel = new JLabel(" Cycles:");
-        SpinnerModel cyclesModel = new SpinnerNumberModel(3,
-                MIN, MAX, 1);
+        SpinnerModel cyclesModel = new SpinnerNumberModel(3, MIN, MAX, 1);
         JSpinner cyclesField = new JSpinner(cyclesModel);
+
+//Run Button Action Listener
+        runPCR.addActionListener(e -> {
+            int cycles = (int) cyclesField.getValue();
+            for (int i = 0; i < cycles; i++) {
+                controller.actionPerformed(new CloningAidActionEvent(
+                        e.getSource(), e.getID(), ControllerView.AC_RUN_PCR, cycles));
+            }
+        });
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.weightx = 0.2;
@@ -74,7 +88,7 @@ public class SetupPanel extends JPanel {
         constraints.gridy = 1;
         constraints.weightx = 0.5;
         constraints.weighty = 0.5;
-        constraints.ipadx =5;
+        constraints.ipadx = 5;
         add(cyclesField, constraints);
 
         constraints.gridx = 2;

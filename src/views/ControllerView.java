@@ -22,7 +22,8 @@ public class ControllerView extends JFrame {
     public static final String AC_GOI_DEF = "goi_input";
     public static final String AC_GOI_ENTRY = "goi_entry";
     public static final String AC_DONOR_ENTRY = "donor_entry";
-    public static final String AC_RUN_PCR = "donor_entry";
+//    public static final String AC_RUN_PCR = "donor_entry";
+    public static final String AC_RUN_PCR = "ac_run_pcr";
 
     public static final String AC_MENU_OPEN = "menu_open";
     public static final String AC_MENU_TEST = "menu_test";

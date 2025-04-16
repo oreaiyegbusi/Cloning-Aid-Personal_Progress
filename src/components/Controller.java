@@ -20,36 +20,44 @@ public class Controller extends MouseAdapter implements ActionListener,
         view = new ControllerView(this);
     }
 
+
     @Override
     public void actionPerformed(ActionEvent e) {
         String caller = e.getActionCommand();
         CloningAidActionEvent cae = null;
         String sequence = null;
+        Object param = null;
+
         if (e instanceof CloningAidActionEvent) {
             cae = (CloningAidActionEvent) e;
-            sequence = (String) cae.getParameter();
+            param = cae.getParameter();
+            if (param instanceof String) {
+                sequence = (String) param;
+            }
         }
+
         switch (caller) {
             case ControllerView.AC_MENU_TEST:
                 System.out.println("Selected " + caller);
                 testGraphics();
                 break;
+
             case ControllerView.AC_MENU_OPEN:
                 JFileChooser chooser = new JFileChooser();
-                FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                        "JPG & GIF Images", "jpg", "gif");
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("JPG & GIF Images", "jpg", "gif");
                 chooser.setFileFilter(filter);
                 int returnVal = chooser.showOpenDialog(view);
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
-                    System.out.println("You chose to open this file: " +
-                            chooser.getSelectedFile().getName());
+                    System.out.println("You chose to open this file: " + chooser.getSelectedFile().getName());
                 }
                 break;
+
             case ControllerView.AC_DONOR_ENTRY:
                 new InputPanel(this, view, "donor");
                 break;
+
             case ControllerView.AC_DONOR_DEF:
-                if (sequence.matches("[ACTG]+")) {
+                if (sequence != null && sequence.matches("[ACTG]+")) {
                     try {
                         donor = new DSDNASequence(sequence);
                         donorDefined = true;
@@ -60,14 +68,17 @@ public class Controller extends MouseAdapter implements ActionListener,
                 }
                 System.out.println(sequence);
                 break;
+
             case ControllerView.AC_GOI_ENTRY:
                 new InputPanel(this, view, "goi");
                 break;
+
             case ControllerView.AC_GOI_DEF:
-                if (sequence.matches("[ACTG]+")) {
+                if (sequence != null && sequence.matches("[ACTG]+")) {
                     try {
                         goi = new DSDNASequence(sequence);
                         goiDefined = true;
+                        showGOI();
                     } catch (CloningAidException | IllegalArgumentException ex) {
                         showErrorPanel(ex.getMessage());
                     }
@@ -75,18 +86,56 @@ public class Controller extends MouseAdapter implements ActionListener,
                 System.out.println(sequence);
                 break;
 
-            default:
+            case ControllerView.AC_RUN_PCR:
+                if (donorDefined && goiDefined) {
+                    PolymeraseChainReactor reactor = new PolymeraseChainReactor(donor, goi);
+                    int cycles = 1;
+                    if (param instanceof Integer) {
+                        cycles = (Integer) param;
+                    }
+                    reactor.run(cycles);
+
+                    //To display all products from all cycles.
+                    for (int i = 0; i <= cycles; i++) {
+                        try {
+                            DSDNASequence[] cycleProducts = reactor.getLevel(i);
+                            if (cycleProducts != null && cycleProducts.length > 0 && cycleProducts[0] != null) {
+                               // for (int j = 0; j < cycleProducts.length; j++) {
+                                    DSDNASequence product = cycleProducts[0];
+                                   // if (product != null) {
+                                        int yOffset = 100 + (i * 100);
+                                        int length = product.getSense().getLength();
+
+                                        view.renderText("Cycle " + i + "Product ", 20, yOffset, 14);
+                                        view.renderDSDNA(product, 20, yOffset + 15, length * 5, 10);
+                                    }
+                        } catch (CloningAidException ex) {
+                            showErrorPanel("Error retrieving level " + i + ": " + ex.getMessage());
+                        }
+                    }
+
+//                    DSDNASequence amplified = reactor.getDonor();
+//                    int length = amplified.getSense().getLength();
+//                    view.renderText("PCR Product", 10, 160, 12);
+//                    view.renderDSDNA(amplified, 10, 170, length * 5, 10);
+                } else {
+                    showErrorPanel("Define both donor and GOI before Running PCR.");
+                }
+                break;
         }
     }
+
 
     private void showDonor() {
         view.renderText("Donor", 10, 40, 12);
         int length = donor.getSense().getLength();
         view.renderDSDNA(donor, 10, 50, length * 5, 10);
-//
-//        view.renderText("Gene of Interest", 10, 60, 12);
-//        int lengthGoi = goi.getSense().getLength();
-//        view.renderDSDNA(goi, 10, 50, lengthGoi*4, 10);
+    }
+
+    private void showGOI() {
+        view.renderText("Gene of Interest", 10, 100, 12);
+        int lengthGOI = goi.getSense().getLength();
+        view.renderDSDNA(goi, 10, 110, lengthGOI * 5, 10);
     }
 
     @Override

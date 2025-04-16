@@ -94,6 +94,7 @@ public class WorkspacePanel extends JPanel {
         gc.setColor(background);
         gc.fillRect(0,0, getWidth(), getHeight());
         gc.dispose();
+        repaint();
     }
 
     public Graphics2D getGraphics2D() {
